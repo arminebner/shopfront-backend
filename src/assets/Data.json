@@ -1,0 +1,16 @@
+[
+    { "id": 1, "name": "Bontang Airport", "image": "https://picsum.photos" },
+    { "id": 2, "name": "Atka Airport", "image": "https://picsum.photos" },
+    { "id": 3, "name": "Bradshaw Army Airfield", "image": "https://picsum.photos" },
+    { "id": 4, "name": "Marawaka Airport", "image": "https://picsum.photos" },
+    { "id": 5, "name": "Kadhdhoo Airport", "image": "https://picsum.photos" },
+    { "id": 6, "name": "Gyumri Shirak Airport", "image": "https://picsum.photos" },
+    {
+        "id": 7,
+        "name": "Grand Lake Regional Airport",
+        "image": "https://picsum.photos"
+    },
+    { "id": 8, "name": "Yaviza Airport", "image": "https://picsum.photos" },
+    { "id": 9, "name": "Eelde Airport", "image": "https://picsum.photos" },
+    { "id": 10, "name": "Leeward Point Field", "image": "https://picsum.photos" }
+]
