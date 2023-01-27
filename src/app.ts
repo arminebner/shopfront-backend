@@ -1,15 +1,16 @@
 require('dotenv').config()
-import express, { json } from 'express'
+import express from 'express'
+import * as bodyParser from 'body-parser'
 import config from 'config'
 import log from './utils/logger'
 import router from './controller'
 
-const cors = require('cors')
+import cors from 'cors'
 
 const app = express()
 
 app.use(cors())
-app.use(json())
+app.use(bodyParser.json())
 app.use(router)
 
 const port = config.get('port')

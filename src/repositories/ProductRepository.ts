@@ -41,7 +41,7 @@ class ProductRepo {
         price: true,
       },
       where: {
-        name,
+        name: name,
       },
     })
     return productById

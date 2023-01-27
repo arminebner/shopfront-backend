@@ -8,14 +8,14 @@ class ProductService {
   }
   async addProduct(productToAdd) {
     // product valueObjects for newProduct and existingProduct ?
-
     const existingProduct = await this.repo.productExists(productToAdd.name)
 
     if (existingProduct) {
       return 'Error: This product name is already taken.'
     }
 
-    return await this.repo.addProduct(productToAdd)
+    const addedProduct = await this.repo.addProduct(productToAdd)
+    return addedProduct
   }
 
   async allProducts() {

@@ -45,7 +45,16 @@ afterAll(async () => {
 describe('The product service', () => {
   test('adds a product', async () => {
     const addedProduct = await productService.addProduct(product)
+
     expect(addedProduct).toEqual(product)
+  })
+
+  test('does not add a product with existing productname', async () => {
+    await productService.addProduct(product)
+    await productService.addProduct(product)
+    const allProducts = await productService.allProducts()
+
+    expect(allProducts).toEqual([product])
   })
 
   test('returns all products', async () => {
@@ -53,11 +62,13 @@ describe('The product service', () => {
     await productService.addProduct(product2)
 
     const allProducts = await productService.allProducts()
+
     expect(allProducts).toEqual(manyProducts)
   })
 
   test('returns a product by id', async () => {
     const productById = await productService.productById(productId)
+
     expect(productById).toEqual(product)
   })
 })
