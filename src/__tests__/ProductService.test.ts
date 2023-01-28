@@ -90,4 +90,19 @@ describe('The product service', () => {
 
     expect(remainingProducts).not.toContain(products[0].id)
   })
+
+  test('updates a product', async () => {
+    const product = createProduct(1)
+    await productService.addProduct(product[0])
+    const productToUpdate = {
+      id: product[0].id,
+      name: `UPDATED_Product: ${Date.now()}`,
+      image_url: 'https://picsum.photos',
+      price: new Decimal(10),
+    }
+
+    const updatedProduct = await productService.updateProduct(productToUpdate)
+
+    expect(updatedProduct).toEqual(productToUpdate)
+  })
 })

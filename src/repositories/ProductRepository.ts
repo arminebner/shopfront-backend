@@ -54,6 +54,21 @@ class ProductRepo {
       },
     })
   }
+
+  async updateProduct(productToUpdate) {
+    const updatedProduct = await this.prisma.product.update({
+      where: {
+        id: productToUpdate.id,
+      },
+      data: {
+        id: productToUpdate.id,
+        name: productToUpdate.name,
+        image_url: productToUpdate.image_url,
+        price: productToUpdate.price,
+      },
+    })
+    return updatedProduct
+  }
 }
 
 export default ProductRepo

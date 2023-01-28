@@ -43,6 +43,18 @@ class ProductService {
 
     return id
   }
+
+  async updateProduct(productToUpdate) {
+    const productById = await this.repo.productById(productToUpdate.id)
+
+    if (!productById) {
+      throw new Error(`The product with the id: ${productToUpdate.id} was not found.`)
+    }
+
+    const result = await this.repo.updateProduct(productToUpdate)
+
+    return result
+  }
 }
 
 export default ProductService
