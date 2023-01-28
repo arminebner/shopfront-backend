@@ -11,11 +11,10 @@ class ProductService {
     const existingProduct = await this.repo.productExists(productToAdd.name)
 
     if (existingProduct) {
-      return 'Error: This product name is already taken.'
+      throw new Error('This product name is already taken.')
     }
 
-    const addedProduct = await this.repo.addProduct(productToAdd)
-    return addedProduct
+    return await this.repo.addProduct(productToAdd)
   }
 
   async allProducts() {

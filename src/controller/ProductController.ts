@@ -11,13 +11,17 @@ router.get('/api/products', async (_: Request, res: Response) => {
 
 router.get('/api/product/:id', async (req: Request, res: Response) => {
   const id = req.params.id as string
-  const result = productService.productById(id)
+  const result = await productService.productById(id)
   res.json(result)
 })
 
 router.post('/api/product', async (req: Request, res: Response) => {
-  const result = await productService.addProduct(req.body)
-  res.json(result)
+  try {
+    const result = await productService.addProduct(req.body)
+    res.json(result)
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
 })
 
 export default router

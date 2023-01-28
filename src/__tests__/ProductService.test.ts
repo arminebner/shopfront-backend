@@ -1,76 +1,76 @@
-import { afterAll, describe, expect, test } from 'vitest'
+import { afterAll, afterEach, describe, expect, test } from 'vitest'
 import { Decimal } from '@prisma/client/runtime'
 import { PrismaClient } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
 import ProductService from '../services/ProductService'
 
-const productId = uuidv4()
-const productId2 = uuidv4()
-const product = {
-  id: productId,
-  name: 'product1',
-  image_url: 'https://picsum.photos',
-  price: new Decimal(5.5),
-}
-const product2 = {
-  id: productId2,
-  name: 'product2',
-  image_url: 'https://picsum.photos',
-  price: new Decimal(9.99),
-}
-const manyProducts = [
-  {
-    id: productId,
-    name: 'product1',
-    image_url: 'https://picsum.photos',
-    price: new Decimal(5.5),
-  },
-  {
-    id: productId2,
-    name: 'product2',
-    image_url: 'https://picsum.photos',
-    price: new Decimal(9.99),
-  },
-]
 const productService = new ProductService()
+const prisma = new PrismaClient()
+
+function createProduct(amount: number) {
+  const array = Array.from({ length: amount }, (_, i) => i + 1)
+  const products = []
+
+  array.forEach(element => {
+    products.push({
+      id: uuidv4(),
+      name: `Product${element}: ${Date.now()}`,
+      image_url: 'https://picsum.photos',
+      price: new Decimal(5.5),
+    })
+  })
+
+  return products
+}
+
+afterEach(async () => {
+  const deleteProducts = prisma.product.deleteMany()
+  await prisma.$transaction([deleteProducts])
+})
 
 afterAll(async () => {
-  const prisma = new PrismaClient()
-  const deleteProducts = prisma.product.deleteMany()
-
-  await prisma.$transaction([deleteProducts])
   await prisma.$disconnect()
 })
 
 describe('The product service', () => {
   test('adds a product', async () => {
-    const addedProduct = await productService.addProduct(product)
+    const products = createProduct(1)
+    const addedProduct = await productService.addProduct(products[0])
 
-    expect(addedProduct).toEqual(product)
+    expect(addedProduct).toEqual(products[0])
   })
 
-  test('does not add a product with existing productname', async () => {
-    await productService.addProduct(product)
-    await productService.addProduct(product)
-    const allProducts = await productService.allProducts()
+  test('throws an error for existing productname', async () => {
+    const product = createProduct(1)
+    await productService.addProduct(product[0])
 
-    expect(allProducts).toEqual([product])
+    try {
+      await productService.addProduct(product[0])
+    } catch (error) {
+      expect(error.message).toBe('This product name is already taken.')
+    }
   })
 
   test('returns all products', async () => {
-    await productService.addProduct(product)
-    await productService.addProduct(product2)
+    const products = createProduct(2)
+
+    await productService.addProduct(products[0])
+    await productService.addProduct(products[1])
 
     const allProducts = await productService.allProducts()
 
-    expect(allProducts).toEqual(manyProducts)
+    console.log(allProducts)
+
+    expect(allProducts).toEqual(products)
   })
 
   test('returns a product by id', async () => {
-    const productById = await productService.productById(productId)
+    const products = createProduct(2)
+    await productService.addProduct(products[0])
+    await productService.addProduct(products[1])
 
-    expect(productById).toEqual(product)
+    const productById = await productService.productById(products[0].id)
+
+    expect(productById).toEqual(products[0])
   })
 })
-
-// flag vitest to not run in paraalel with --no-threads ?
