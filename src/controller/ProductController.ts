@@ -23,5 +23,14 @@ router.post('/api/product', async (req: Request, res: Response) => {
     res.status(400).send(error.message)
   }
 })
+router.delete('/api/product/:id', async (req: Request, res: Response) => {
+  const id = req.params.id as string
+  try {
+    const result = await productService.deleteById(id)
+    res.json(result)
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+})
 
 export default router

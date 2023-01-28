@@ -22,7 +22,7 @@ class ProductRepo {
   async productById(id: string) {
     const productById = await this.prisma.product.findUnique({
       where: {
-        id: id,
+        id,
       },
     })
     return productById
@@ -32,7 +32,7 @@ class ProductRepo {
     return this.prisma.product.findMany({})
   }
 
-  async productExists(name: string) {
+  async productNameExists(name: string) {
     const productById = await this.prisma.product.findFirst({
       select: {
         id: true,
@@ -41,10 +41,18 @@ class ProductRepo {
         price: true,
       },
       where: {
-        name: name,
+        name,
       },
     })
     return productById
+  }
+
+  async deleteById(id: string) {
+    await this.prisma.product.delete({
+      where: {
+        id,
+      },
+    })
   }
 }
 

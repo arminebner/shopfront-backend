@@ -6,9 +6,10 @@ class ProductService {
   constructor() {
     this.repo = new ProductRepo()
   }
+
   async addProduct(productToAdd) {
     // product valueObjects for newProduct and existingProduct ?
-    const existingProduct = await this.repo.productExists(productToAdd.name)
+    const existingProduct = await this.repo.productNameExists(productToAdd.name)
 
     if (existingProduct) {
       throw new Error('This product name is already taken.')
@@ -22,7 +23,25 @@ class ProductService {
   }
 
   async productById(id: string) {
-    return await this.repo.productById(id)
+    const productById = await this.repo.productById(id)
+
+    if (!productById) {
+      throw new Error(`The product with the id: ${id} was not found.`)
+    }
+
+    return productById
+  }
+
+  async deleteById(id: string) {
+    const productById = await this.repo.productById(id)
+
+    if (!productById) {
+      throw new Error(`The product with the id: ${id} was not found.`)
+    }
+
+    await this.repo.deleteById(id)
+
+    return id
   }
 }
 
