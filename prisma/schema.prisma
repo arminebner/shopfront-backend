@@ -10,9 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model product {
+model Product {
   id String @default(uuid()) @id
-  name String @db.VarChar(100) @unique
+  name String @db.VarChar(30) @unique
+  short_description String @db.VarChar(100)
+  description String ? @db.VarChar(500)
   image_url String
   price Decimal @db.Money
 }

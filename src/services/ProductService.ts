@@ -1,4 +1,5 @@
 import ProductRepo from '../repositories/ProductRepository'
+import log from '../utils/logger'
 
 class ProductService {
   repo: ProductRepo
@@ -12,6 +13,7 @@ class ProductService {
     const existingProduct = await this.repo.productNameExists(productToAdd.name)
 
     if (existingProduct) {
+      log.error(`${productToAdd.name}: Productname already exists`)
       throw new Error('This product name is already taken.')
     }
 
@@ -26,6 +28,7 @@ class ProductService {
     const productById = await this.repo.productById(id)
 
     if (!productById) {
+      log.error(`The product with the id: ${id} was not found.`)
       throw new Error(`The product with the id: ${id} was not found.`)
     }
 
@@ -36,6 +39,7 @@ class ProductService {
     const productById = await this.repo.productById(id)
 
     if (!productById) {
+      log.error(`The product with the id: ${id} was not found.`)
       throw new Error(`The product with the id: ${id} was not found.`)
     }
 
@@ -48,6 +52,7 @@ class ProductService {
     const productById = await this.repo.productById(productToUpdate.id)
 
     if (!productById) {
+      log.error(`The product with the id: ${productToUpdate.id} was not found.`)
       throw new Error(`The product with the id: ${productToUpdate.id} was not found.`)
     }
 

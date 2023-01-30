@@ -12,6 +12,8 @@ class ProductRepo {
       data: {
         id: productToAdd.id,
         name: productToAdd.name,
+        short_description: productToAdd.short_description,
+        description: productToAdd.description,
         image_url: productToAdd.image_url,
         price: productToAdd.price,
       },

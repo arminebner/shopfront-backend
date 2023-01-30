@@ -15,6 +15,8 @@ function createProduct(amount: number) {
     products.push({
       id: uuidv4(),
       name: `Product${element}: ${Date.now()}`,
+      short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
+      description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'https://picsum.photos',
       price: new Decimal(5.5),
     })
@@ -97,6 +99,8 @@ describe('The product service', () => {
     const productToUpdate = {
       id: product[0].id,
       name: `UPDATED_Product: ${Date.now()}`,
+      short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
+      description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'https://picsum.photos',
       price: new Decimal(10),
     }

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --debug --exit-child --transpile-only src/app.ts",
+    "dev": "npx prisma migrate dev && dotenv -e .env.test npx prisma migrate dev && ts-node-dev --respawn --debug --exit-child --transpile-only src/app.ts",
     "test": "dotenv -e .env.test -- vitest ./__tests__"
   },
   "author": "",
