@@ -1,15 +1,16 @@
-import { afterAll, afterEach, describe, expect, test } from 'vitest'
 import { Decimal } from '@prisma/client/runtime'
+import { afterAll, afterEach, describe, expect, test } from 'vitest'
 import { PrismaClient } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
 import ProductService from '../services/ProductService'
+import Product from '../types/Product'
 
 const productService = new ProductService()
 const prisma = new PrismaClient()
 
 function createProduct(amount: number) {
   const array = Array.from({ length: amount }, (_, i) => i + 1)
-  const products = []
+  const products: Product[] = []
 
   array.forEach(element => {
     products.push({
@@ -18,7 +19,7 @@ function createProduct(amount: number) {
       short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'https://picsum.photos',
-      price: new Decimal(5.5),
+      price: '5.5',
     })
   })
 
@@ -48,7 +49,7 @@ describe('The product service', () => {
 
     try {
       await productService.addProduct(product[0])
-    } catch (error) {
+    } catch (error: any) {
       expect(error.message).toBe('This product name is already taken.')
     }
   })
@@ -77,7 +78,7 @@ describe('The product service', () => {
     const id = uuidv4()
     try {
       await productService.productById(id)
-    } catch (error) {
+    } catch (error: any) {
       expect(error.message).toBe(`The product with the id: ${id} was not found.`)
     }
   })
@@ -102,7 +103,7 @@ describe('The product service', () => {
       short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'https://picsum.photos',
-      price: new Decimal(10),
+      price: '10',
     }
 
     const updatedProduct = await productService.updateProduct(productToUpdate)

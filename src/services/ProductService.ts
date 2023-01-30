@@ -1,4 +1,5 @@
 import ProductRepo from '../repositories/ProductRepository'
+import Product from '../types/Product'
 import log from '../utils/logger'
 
 class ProductService {
@@ -8,7 +9,7 @@ class ProductService {
     this.repo = new ProductRepo()
   }
 
-  async addProduct(productToAdd) {
+  async addProduct(productToAdd: Product) {
     // product valueObjects for newProduct and existingProduct ?
     const existingProduct = await this.repo.productNameExists(productToAdd.name)
 
@@ -48,7 +49,7 @@ class ProductService {
     return id
   }
 
-  async updateProduct(productToUpdate) {
+  async updateProduct(productToUpdate: Product) {
     const productById = await this.repo.productById(productToUpdate.id)
 
     if (!productById) {

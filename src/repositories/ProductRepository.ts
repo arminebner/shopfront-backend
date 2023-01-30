@@ -1,4 +1,7 @@
 import { PrismaClient } from '@prisma/client'
+import { P } from 'pino'
+import { map } from 'zod'
+import Product from '../types/Product'
 
 class ProductRepo {
   prisma: PrismaClient
@@ -7,7 +10,7 @@ class ProductRepo {
     this.prisma = new PrismaClient()
   }
 
-  async addProduct(productToAdd) {
+  async addProduct(productToAdd: Product) {
     const addedProduct = await this.prisma.product.create({
       data: {
         id: productToAdd.id,
@@ -18,7 +21,8 @@ class ProductRepo {
         price: productToAdd.price,
       },
     })
-    return addedProduct
+
+    return mapDecimalToString(addedProduct)
   }
 
   async productById(id: string) {
@@ -27,11 +31,12 @@ class ProductRepo {
         id,
       },
     })
-    return productById
+    return productById ? mapDecimalToString(productById) : undefined
   }
 
   async allProducts() {
-    return this.prisma.product.findMany({})
+    const allProducts = await this.prisma.product.findMany({})
+    return allProducts.map(p => mapDecimalToString(p))
   }
 
   async productNameExists(name: string) {
@@ -57,7 +62,7 @@ class ProductRepo {
     })
   }
 
-  async updateProduct(productToUpdate) {
+  async updateProduct(productToUpdate: Product) {
     const updatedProduct = await this.prisma.product.update({
       where: {
         id: productToUpdate.id,
@@ -69,7 +74,14 @@ class ProductRepo {
         price: productToUpdate.price,
       },
     })
-    return updatedProduct
+    return mapDecimalToString(updatedProduct)
+  }
+}
+
+function mapDecimalToString(product: Product): Product {
+  return {
+    ...product,
+    price: product.price.toString(),
   }
 }
 
