@@ -2,11 +2,12 @@ import { Decimal } from '@prisma/client/runtime'
 import { afterAll, afterEach, describe, expect, test } from 'vitest'
 import { PrismaClient } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
-import ProductService from '../services/ProductService'
-import Product from '../types/Product'
+import ProductService from '../services/productService'
+import Product from '../types/product'
+import ProductRepo from '../repositories/productRepository'
 
-const productService = new ProductService()
 const prisma = new PrismaClient()
+const productService = new ProductService(new ProductRepo(prisma))
 
 function createProduct(amount: number) {
   const array = Array.from({ length: amount }, (_, i) => i + 1)

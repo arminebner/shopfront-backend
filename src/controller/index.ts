@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express'
-import productController from './ProductController'
+import productRouter from './productController'
 
 const router = express.Router()
 
 router.get('/healthcheck', (_: Request, res: Response) => res.sendStatus(200))
 
-router.use(productController)
+router.use(productRouter)
 
 export default router

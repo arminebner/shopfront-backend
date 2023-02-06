@@ -1,12 +1,12 @@
-import ProductRepo from '../repositories/ProductRepository'
-import Product from '../types/Product'
+import ProductRepo from '../repositories/productRepository'
+import Product from '../types/product'
 import log from '../utils/logger'
 
 class ProductService {
   repo: ProductRepo
 
-  constructor() {
-    this.repo = new ProductRepo()
+  constructor(repo: ProductRepo) {
+    this.repo = repo
   }
 
   async addProduct(productToAdd: Product) {

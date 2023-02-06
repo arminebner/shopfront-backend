@@ -1,16 +1,14 @@
 import { PrismaClient } from '@prisma/client'
-import { P } from 'pino'
-import { map } from 'zod'
-import Product from '../types/Product'
+import Product2 from '../types/product'
 
 class ProductRepo {
   prisma: PrismaClient
 
-  constructor() {
-    this.prisma = new PrismaClient()
+  constructor(client: PrismaClient) {
+    this.prisma = client
   }
 
-  async addProduct(productToAdd: Product) {
+  async addProduct(productToAdd: Product2) {
     const addedProduct = await this.prisma.product.create({
       data: {
         id: productToAdd.id,
@@ -62,7 +60,7 @@ class ProductRepo {
     })
   }
 
-  async updateProduct(productToUpdate: Product) {
+  async updateProduct(productToUpdate: Product2) {
     const updatedProduct = await this.prisma.product.update({
       where: {
         id: productToUpdate.id,
@@ -78,7 +76,7 @@ class ProductRepo {
   }
 }
 
-function mapDecimalToString(product: Product): Product {
+function mapDecimalToString(product: any) {
   return {
     ...product,
     price: product.price.toString(),
