@@ -1,6 +1,11 @@
 import ProductRepo from '../repositories/productRepository'
 import Product from '../types/product'
 import log from '../utils/logger'
+import fs from 'fs'
+import path from 'path'
+import config from 'config'
+
+const host = config.get<string>('host')
 
 class ProductService {
   repo: ProductRepo
@@ -9,11 +14,35 @@ class ProductService {
     this.repo = repo
   }
 
+  deleteProductImageFromFS(imageUrl: string) {
+    const storagePath = path.join(__dirname, '..', 'public', 'images')
+    const pathToImage = `${storagePath}/${imageUrl}`
+
+    fs.stat(pathToImage, (error: any, stat) => {
+      if (error) {
+        log.error(`${pathToImage} does not exist`)
+      } else {
+        fs.unlink(pathToImage, error => {
+          if (error) throw error
+        })
+        log.info('File deleted successfully')
+      }
+    })
+  }
+
+  mapImageUrls(product: Product) {
+    return {
+      ...product,
+      image_url: `${host}/${product.image_url}`,
+    }
+  }
+
   async addProduct(productToAdd: Product) {
     // product valueObjects for newProduct and existingProduct ?
     const existingProduct = await this.repo.productNameExists(productToAdd.name)
 
     if (existingProduct) {
+      this.deleteProductImageFromFS(productToAdd.image_url)
       log.error(`${productToAdd.name}: Productname already exists`)
       throw new Error('This product name is already taken.')
     }
@@ -22,7 +51,9 @@ class ProductService {
   }
 
   async allProducts() {
-    return await this.repo.allProducts()
+    const allProducts = await this.repo.allProducts()
+
+    return allProducts.map(product => this.mapImageUrls(product))
   }
 
   async productById(id: string) {
@@ -33,7 +64,7 @@ class ProductService {
       throw new Error(`The product with the id: ${id} was not found.`)
     }
 
-    return productById
+    return this.mapImageUrls(productById)
   }
 
   async deleteById(id: string) {
@@ -45,6 +76,8 @@ class ProductService {
     }
 
     await this.repo.deleteById(id)
+
+    this.deleteProductImageFromFS(productById.image_url)
 
     return id
   }

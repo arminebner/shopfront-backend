@@ -7,11 +7,14 @@ import config from 'config'
 import log from './utils/logger'
 import errorHandler from './middleware/errorHandler'
 import router from './controller'
+import path from 'path'
 
 const app = express()
+
+app.use('/images', express.static(path.join(__dirname, 'public', 'images')))
+app.use(cors())
 app.use(helmet())
 //app.use(errorHandler)
-app.use(cors())
 app.use(bodyParser.json())
 app.use(router)
 

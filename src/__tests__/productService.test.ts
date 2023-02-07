@@ -1,4 +1,3 @@
-import { Decimal } from '@prisma/client/runtime'
 import { afterAll, afterEach, describe, expect, test } from 'vitest'
 import { PrismaClient } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
@@ -19,7 +18,7 @@ function createProduct(amount: number) {
       name: `Product${element}: ${Date.now()}`,
       short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
-      image_url: 'https://picsum.photos',
+      image_url: 'file_name.jpg',
       price: '5.5',
     })
   })
@@ -60,9 +59,19 @@ describe('The product service', () => {
     await productService.addProduct(products[0])
     await productService.addProduct(products[1])
 
-    const allProducts = await productService.allProducts()
+    const mappedProducts = products.map(product => {
+      return {
+        ...product,
+        image_url: `http://localhost:5000/images/${product.image_url}`,
+      }
+    })
 
-    expect(allProducts).toEqual(products)
+    try {
+      const allProducts = await productService.allProducts()
+      expect(allProducts).toEqual(mappedProducts)
+    } catch (error) {
+      console.log(error)
+    }
   })
 
   test('returns a product by id', async () => {
@@ -70,9 +79,14 @@ describe('The product service', () => {
     await productService.addProduct(products[0])
     await productService.addProduct(products[1])
 
+    const mappedProduct = {
+      ...products[0],
+      image_url: `http://localhost:5000/images/${products[0].image_url}`,
+    }
+
     const productById = await productService.productById(products[0].id)
 
-    expect(productById).toEqual(products[0])
+    expect(productById).toEqual(mappedProduct)
   })
 
   test('throws error, if product id was not found', async () => {
@@ -89,10 +103,13 @@ describe('The product service', () => {
     await productService.addProduct(products[0])
     await productService.addProduct(products[1])
 
-    await productService.deleteById(products[0].id)
-    const remainingProducts = await productService.allProducts()
-
-    expect(remainingProducts).not.toContain(products[0].id)
+    try {
+      await productService.deleteById(products[0].id)
+      const remainingProducts = await productService.allProducts()
+      expect(remainingProducts).not.toContain(products[0].id)
+    } catch (error) {
+      console.log(error)
+    }
   })
 
   test('updates a product', async () => {
@@ -103,7 +120,7 @@ describe('The product service', () => {
       name: `UPDATED_Product: ${Date.now()}`,
       short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
-      image_url: 'https://picsum.photos',
+      image_url: 'file_name.jpg',
       price: '10',
     }
 

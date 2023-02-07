@@ -1,19 +1,16 @@
-import { PrismaClient } from '@prisma/client'
 import ProductService from '../services/productService'
 import validateResource from '../middleware/validateResource'
-import { validProduct, ProductInput } from '../validation/product.validation'
-import Product from '../types/product'
+import { validProduct } from '../validation/productValidation'
 import ProductRepo from '../repositories/productRepository'
 import express, { Request, Response } from 'express'
+import upload from '../utils/initMulter'
+import { PrismaClient } from '@prisma/client'
 
-const productRouter = express.Router()
-
-const client = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+const prisma = new PrismaClient({
+  log: ['info', 'warn', 'error'],
 })
-client.$connect()
-
-const productService = new ProductService(new ProductRepo(client))
+const productService = new ProductService(new ProductRepo(prisma))
+const productRouter = express.Router()
 
 productRouter.get('/api/products/healthcheck', (_: Request, res: Response) => res.sendStatus(200))
 
@@ -22,11 +19,25 @@ productRouter.get('/api/products', async (req: Request, res: Response) => {
   res.json(result)
 })
 
+productRouter.get('/api/product/:id', async (req: Request, res: Response) => {
+  const id = req.params.id as string
+  try {
+    const result = await productService.productById(id)
+    res.json(result)
+  } catch (error: any) {
+    res.status(400).send(error.message)
+  }
+})
+
 productRouter.post(
   '/api/product',
+  upload.single('image_url'),
   validateResource(validProduct),
-  async (req: Request<{}, {}, ProductInput>, res: Response) => {
-    const validProduct = req.body
+  async (req: Request, res: Response) => {
+    const validProduct = {
+      ...req.body,
+      image_url: `${req.file?.filename}`,
+    }
     try {
       const result = await productService.addProduct(validProduct)
       res.json(result)
@@ -48,10 +59,15 @@ productRouter.delete('/api/product/:id', async (req: Request, res: Response) => 
 
 productRouter.put(
   '/api/product',
+  upload.single('image_url'),
   validateResource(validProduct),
   async (req: Request, res: Response) => {
+    const validProduct = {
+      ...req.body,
+      image_url: `${req.file?.filename}`,
+    }
     try {
-      const result = await productService.updateProduct(req.body)
+      const result = await productService.updateProduct(validProduct)
       res.json(result)
     } catch (error: any) {
       res.status(400).send(error.message)
