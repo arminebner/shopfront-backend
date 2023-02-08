@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 import config from 'config'
 import ProductEntity from '../model/product'
-import { Id, Name } from '../model/valueObjects'
+import { Id, Name, ShortDescription, Description, Money, ImageUrl } from '../model/valueObjects'
 
 const host = config.get<string>('host')
 
@@ -51,10 +51,10 @@ class ProductService {
     const productEntity = new ProductEntity(
       new Id(productToAdd.id),
       new Name(productToAdd.name),
-      productToAdd.short_description,
-      productToAdd.description,
-      productToAdd.price,
-      productToAdd.image_url
+      new ShortDescription(productToAdd.short_description),
+      new Description(productToAdd.description),
+      new Money(productToAdd.price),
+      new ImageUrl(productToAdd.image_url)
     )
 
     return await this.repo.addProduct(productToAdd)

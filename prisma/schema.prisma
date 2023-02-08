@@ -16,5 +16,5 @@ model Product {
   short_description String @db.VarChar(100)
   description String ? @db.VarChar(500)
   image_url String
-  price Decimal @db.Money
+  price Int
 }

@@ -1,3 +1,7 @@
+import config from 'config'
+
+const configCurrency = config.get<string>('currency')
+
 class Id {
   readonly value: string
   constructor(id: string) {
@@ -42,13 +46,13 @@ class Description {
 class Money {
   readonly value: number
   readonly currency: Currency
-  constructor(amount: string, currency: string) {
+  constructor(amount: string) {
     const priceRegex = /^\d+\.\d+?$/
     if (!priceRegex.test(amount)) {
       throw new Error('The price is invalid')
     }
     this.value = parseFloat(amount) * 100
-    this.currency = new Currency(currency)
+    this.currency = new Currency(configCurrency)
   }
 }
 
@@ -59,7 +63,7 @@ class Currency {
     if (!validCurrencyCode.test(currency)) {
       throw new Error('The currency is invalid')
     }
-    this.value = currency
+    this.value = configCurrency
   }
 }
 

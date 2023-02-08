@@ -66,30 +66,30 @@ describe('The description', () => {
 
 describe('The money', () => {
   test(' must only contain numbers and a dot', () => {
-    const validPrice = new Money('12.00', 'EUR')
+    const validPrice = new Money('12.00')
     expect(validPrice).toBeInstanceOf(Money)
     expect(validPrice.value).toBe(1200)
   })
   test('throws error if it has invalid number format', async () => {
     expect(() => {
-      new Money('12', 'EUR')
+      new Money('12')
     }).toThrowError('The price is invalid')
   })
   test('throws error if it has  a negative value', async () => {
     expect(() => {
-      new Money('-12.00', 'EUR')
+      new Money('-12.00')
     }).toThrowError('The price is invalid')
   })
   test('throws error if it has string as value', async () => {
     expect(() => {
-      new Money('twelve', 'EUR')
+      new Money('twelve')
     }).toThrowError('The price is invalid')
   })
-  test('throws error if currency code is invalid', async () => {
+  /*   test('throws error if currency code is invalid', async () => {
     expect(() => {
-      new Money('12.00', 'eur')
+      new Money('12.00')
     }).toThrowError('The currency is invalid')
-  })
+  })*/
 })
 
 describe('The image url', () => {
