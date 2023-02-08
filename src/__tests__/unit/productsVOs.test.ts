@@ -1,5 +1,13 @@
 import { describe, expect, test } from 'vitest'
-import { Id, Name, ShortDescription, Description, Money, ImageUrl } from '../../model/valueObjects'
+import {
+  Id,
+  Name,
+  ShortDescription,
+  Description,
+  Price,
+  Money,
+  ImageUrl,
+} from '../../model/valueObjects'
 import crypto from 'crypto'
 
 function stringWithXChars(x: number) {
@@ -36,7 +44,7 @@ describe('The name', () => {
 })
 
 describe('The short description', () => {
-  test(' must be between 1 and 100 characters long', () => {
+  test('must be between 1 and 100 characters long', () => {
     const validShortDescription = new ShortDescription('This is the best product ever!')
     expect(validShortDescription).toBeInstanceOf(ShortDescription)
   })
@@ -53,7 +61,7 @@ describe('The short description', () => {
 })
 
 describe('The description', () => {
-  test(' must be between 0 and 300 characters long', () => {
+  test('must be between 0 and 300 characters long', () => {
     const validDescription = new Description('This is the best product ever!')
     expect(validDescription).toBeInstanceOf(Description)
   })
@@ -64,32 +72,29 @@ describe('The description', () => {
   })
 })
 
+describe('The price', () => {
+  test('', () => {
+    const validPrice: Price = new Price('5.5')
+    expect(validPrice).toBeInstanceOf(Price)
+  })
+  test('throws error if not in right format', async () => {
+    expect(() => {
+      new Price('money')
+    }).toThrowError('The price is invalid')
+  })
+})
+
 describe('The money', () => {
-  test(' must only contain numbers and a dot', () => {
-    const validPrice = new Money('12.00')
+  test(' must only contain numbers', () => {
+    const validPrice = new Money(1200)
     expect(validPrice).toBeInstanceOf(Money)
     expect(validPrice.value).toBe(1200)
   })
-  test('throws error if it has invalid number format', async () => {
-    expect(() => {
-      new Money('12')
-    }).toThrowError('The price is invalid')
-  })
   test('throws error if it has  a negative value', async () => {
     expect(() => {
-      new Money('-12.00')
-    }).toThrowError('The price is invalid')
+      new Money(-1200)
+    }).toThrowError('The money is invalid')
   })
-  test('throws error if it has string as value', async () => {
-    expect(() => {
-      new Money('twelve')
-    }).toThrowError('The price is invalid')
-  })
-  /*   test('throws error if currency code is invalid', async () => {
-    expect(() => {
-      new Money('12.00')
-    }).toThrowError('The currency is invalid')
-  })*/
 })
 
 describe('The image url', () => {

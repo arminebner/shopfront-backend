@@ -43,16 +43,32 @@ class Description {
   }
 }
 
-class Money {
-  readonly value: number
+class Price {
+  readonly value: string
   readonly currency: Currency
   constructor(amount: string) {
     const priceRegex = /^\d+\.\d+?$/
     if (!priceRegex.test(amount)) {
       throw new Error('The price is invalid')
     }
-    this.value = parseFloat(amount) * 100
+    this.value = amount
     this.currency = new Currency(configCurrency)
+  }
+  valueToMoney() {
+    return new Money(parseFloat(this.value) * 100)
+  }
+}
+
+class Money {
+  readonly value: number
+  constructor(amount: number) {
+    if (amount < 0) {
+      throw new Error('The money is invalid')
+    }
+    this.value = amount
+  }
+  valueToPrice() {
+    return new Price((this.value / 100).toFixed(2))
   }
 }
 
@@ -78,6 +94,6 @@ class ImageUrl {
   }
 }
 
-export { Id, Name, ShortDescription, Description, Money, ImageUrl }
+export { Id, Name, ShortDescription, Description, Price, Money, ImageUrl }
 
 //export types from that ?

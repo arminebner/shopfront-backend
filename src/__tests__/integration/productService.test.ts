@@ -19,7 +19,7 @@ function createProduct(amount: number) {
       short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'file_name.jpg',
-      price: '5.5',
+      price: '5.50',
     })
   })
 
@@ -40,7 +40,10 @@ describe('The product service', () => {
     const products = createProduct(1)
     const addedProduct = await productService.addProduct(products[0])
 
-    expect(addedProduct).toEqual(products[0])
+    expect(addedProduct).toEqual({
+      ...products[0],
+      image_url: 'http://localhost:5000/images/file_name.jpg',
+    })
   })
 
   test('throws error for existing productname', async () => {
@@ -121,11 +124,14 @@ describe('The product service', () => {
       short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'file_name.jpg',
-      price: '10',
+      price: '10.00',
     }
 
     const updatedProduct = await productService.updateProduct(productToUpdate)
 
-    expect(updatedProduct).toEqual(productToUpdate)
+    expect(updatedProduct).toEqual({
+      ...productToUpdate,
+      image_url: `http://localhost:5000/images/${product[0].image_url}`,
+    })
   })
 })

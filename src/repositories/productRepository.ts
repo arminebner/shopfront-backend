@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import Product2 from '../types/product'
-
+import ProductEntity from '../model/product'
+import { Id, Name, ShortDescription, Description, Money, ImageUrl } from '../model/valueObjects'
 class ProductRepo {
   prisma: PrismaClient
 
@@ -8,19 +8,19 @@ class ProductRepo {
     this.prisma = client
   }
 
-  async addProduct(productToAdd: Product2) {
-    const addedProduct = await this.prisma.product.create({
+  async addProduct(validProduct: ProductEntity) {
+    const data = await this.prisma.product.create({
       data: {
-        id: productToAdd.id,
-        name: productToAdd.name,
-        short_description: productToAdd.short_description,
-        description: productToAdd.description,
-        image_url: productToAdd.image_url,
-        price: productToAdd.price,
+        id: validProduct.id.value,
+        name: validProduct.name.value,
+        short_description: validProduct.short_description.value,
+        description: validProduct.description.value,
+        image_url: validProduct.image_url.value,
+        price: validProduct.price.value,
       },
     })
 
-    return mapDecimalToString(addedProduct)
+    return productFromData(data)
   }
 
   async productById(id: string) {
@@ -29,12 +29,12 @@ class ProductRepo {
         id,
       },
     })
-    return productById ? mapDecimalToString(productById) : undefined
+    return productById ? productFromData(productById) : undefined
   }
 
   async allProducts() {
     const allProducts = await this.prisma.product.findMany({})
-    return allProducts.map(p => mapDecimalToString(p))
+    return allProducts.map(p => productFromData(p))
   }
 
   async productNameExists(name: string) {
@@ -60,20 +60,33 @@ class ProductRepo {
     })
   }
 
-  async updateProduct(productToUpdate: Product2) {
-    const updatedProduct = await this.prisma.product.update({
+  async updateProduct(productToUpdate: ProductEntity) {
+    const data = await this.prisma.product.update({
       where: {
-        id: productToUpdate.id,
+        id: productToUpdate.id.value,
       },
       data: {
-        id: productToUpdate.id,
-        name: productToUpdate.name,
-        image_url: productToUpdate.image_url,
-        price: productToUpdate.price,
+        id: productToUpdate.id.value,
+        name: productToUpdate.name.value,
+        short_description: productToUpdate.short_description.value,
+        description: productToUpdate.description.value,
+        image_url: productToUpdate.image_url.value,
+        price: productToUpdate.price.value,
       },
     })
-    return mapDecimalToString(updatedProduct)
+    return productFromData(data)
   }
+}
+
+function productFromData(data: any) {
+  return new ProductEntity(
+    new Id(data.id),
+    new Name(data.name),
+    new ShortDescription(data.short_description),
+    new Description(data.description),
+    new Money(data.price),
+    new ImageUrl(data.image_url)
+  )
 }
 
 function mapDecimalToString(product: any) {

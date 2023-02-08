@@ -5,7 +5,15 @@ import fs from 'fs'
 import path from 'path'
 import config from 'config'
 import ProductEntity from '../model/product'
-import { Id, Name, ShortDescription, Description, Money, ImageUrl } from '../model/valueObjects'
+import {
+  Id,
+  Name,
+  ShortDescription,
+  Description,
+  Price,
+  Money,
+  ImageUrl,
+} from '../model/valueObjects'
 
 const host = config.get<string>('host')
 
@@ -32,10 +40,14 @@ class ProductService {
     })
   }
 
-  mapImageUrls(product: Product) {
+  toJSON(product: ProductEntity) {
     return {
-      ...product,
-      image_url: `${host}/${product.image_url}`,
+      id: product.id.value,
+      name: product.name.value,
+      short_description: product.short_description.value,
+      description: product.description.value,
+      price: (product.price as Money).valueToPrice().value,
+      image_url: `${host}/${product.image_url.value}`,
     }
   }
 
@@ -48,22 +60,24 @@ class ProductService {
       throw new Error('This product name is already taken.')
     }
 
-    const productEntity = new ProductEntity(
+    const validProduct = new ProductEntity(
       new Id(productToAdd.id),
       new Name(productToAdd.name),
       new ShortDescription(productToAdd.short_description),
       new Description(productToAdd.description),
-      new Money(productToAdd.price),
+      new Price(productToAdd.price).valueToMoney(),
       new ImageUrl(productToAdd.image_url)
     )
 
-    return await this.repo.addProduct(productToAdd)
+    const addedProduct = await this.repo.addProduct(validProduct)
+
+    return this.toJSON(addedProduct)
   }
 
   async allProducts() {
     const allProducts = await this.repo.allProducts()
 
-    return allProducts.map(product => this.mapImageUrls(product))
+    return allProducts.map(product => this.toJSON(product))
   }
 
   async productById(id: string) {
@@ -74,7 +88,7 @@ class ProductService {
       throw new Error(`The product with the id: ${id} was not found.`)
     }
 
-    return this.mapImageUrls(productById)
+    return this.toJSON(productById)
   }
 
   async deleteById(id: string) {
@@ -87,7 +101,7 @@ class ProductService {
 
     await this.repo.deleteById(id)
 
-    this.deleteProductImageFromFS(productById.image_url)
+    this.deleteProductImageFromFS(productById.image_url.value)
 
     return id
   }
@@ -100,9 +114,18 @@ class ProductService {
       throw new Error(`The product with the id: ${productToUpdate.id} was not found.`)
     }
 
-    const result = await this.repo.updateProduct(productToUpdate)
+    const validProduct = new ProductEntity(
+      new Id(productToUpdate.id),
+      new Name(productToUpdate.name),
+      new ShortDescription(productToUpdate.short_description),
+      new Description(productToUpdate.description),
+      new Price(productToUpdate.price).valueToMoney(),
+      new ImageUrl(productToUpdate.image_url)
+    )
 
-    return result
+    const updatedProduct = await this.repo.updateProduct(validProduct)
+
+    return this.toJSON(updatedProduct)
   }
 }
 
