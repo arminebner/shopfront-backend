@@ -1,9 +1,9 @@
 import { afterAll, afterEach, describe, expect, test } from 'vitest'
 import { PrismaClient } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
-import ProductService from '../services/productService'
-import Product from '../types/product'
-import ProductRepo from '../repositories/productRepository'
+import ProductService from '../../services/productService'
+import Product from '../../types/product'
+import ProductRepo from '../../repositories/productRepository'
 
 const prisma = new PrismaClient()
 const productService = new ProductService(new ProductRepo(prisma))

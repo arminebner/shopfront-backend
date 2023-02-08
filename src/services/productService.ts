@@ -4,6 +4,8 @@ import log from '../utils/logger'
 import fs from 'fs'
 import path from 'path'
 import config from 'config'
+import ProductEntity from '../model/product'
+import { Id, Name } from '../model/valueObjects'
 
 const host = config.get<string>('host')
 
@@ -38,7 +40,6 @@ class ProductService {
   }
 
   async addProduct(productToAdd: Product) {
-    // product valueObjects for newProduct and existingProduct ?
     const existingProduct = await this.repo.productNameExists(productToAdd.name)
 
     if (existingProduct) {
@@ -46,6 +47,15 @@ class ProductService {
       log.error(`${productToAdd.name}: Productname already exists`)
       throw new Error('This product name is already taken.')
     }
+
+    const productEntity = new ProductEntity(
+      new Id(productToAdd.id),
+      new Name(productToAdd.name),
+      productToAdd.short_description,
+      productToAdd.description,
+      productToAdd.price,
+      productToAdd.image_url
+    )
 
     return await this.repo.addProduct(productToAdd)
   }
