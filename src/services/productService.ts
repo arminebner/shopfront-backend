@@ -1,61 +1,24 @@
 import ProductRepo from '../repositories/productRepository'
 import Product from '../types/product'
 import log from '../utils/logger'
-import fs from 'fs'
-import path from 'path'
-import config from 'config'
 import ProductEntity from '../model/product'
-import {
-  Id,
-  Name,
-  ShortDescription,
-  Description,
-  Price,
-  Money,
-  ImageUrl,
-} from '../model/valueObjects'
-
-const host = config.get<string>('host')
-
+import { Id, Name, ShortDescription, Description, Price, ImageUrl } from '../model/valueObjects'
+import FileDeletionService from '../openServices/imageDeletionService'
 class ProductService {
   repo: ProductRepo
+  fileDeletionService: FileDeletionService
 
   constructor(repo: ProductRepo) {
     this.repo = repo
-  }
-
-  deleteProductImageFromFS(imageUrl: string) {
-    const storagePath = path.join(__dirname, '..', 'public', 'images')
-    const pathToImage = `${storagePath}/${imageUrl}`
-
-    fs.stat(pathToImage, (error: any, stat) => {
-      if (error) {
-        log.error(`${pathToImage} does not exist`)
-      } else {
-        fs.unlink(pathToImage, error => {
-          if (error) throw error
-        })
-        log.info('File deleted successfully')
-      }
-    })
-  }
-
-  toJSON(product: ProductEntity) {
-    return {
-      id: product.id.value,
-      name: product.name.value,
-      short_description: product.short_description.value,
-      description: product.description.value,
-      price: (product.price as Money).valueToPrice().value,
-      image_url: `${host}/${product.image_url.value}`,
-    }
+    this.fileDeletionService = new FileDeletionService()
   }
 
   async addProduct(productToAdd: Product) {
     const existingProduct = await this.repo.productNameExists(productToAdd.name)
 
     if (existingProduct) {
-      this.deleteProductImageFromFS(productToAdd.image_url)
+      console.log(this.fileDeletionService)
+      this.fileDeletionService.deleteProductImage(productToAdd.image_url)
       log.error(`${productToAdd.name}: Productname already exists`)
       throw new Error('This product name is already taken.')
     }
@@ -71,13 +34,13 @@ class ProductService {
 
     const addedProduct = await this.repo.addProduct(validProduct)
 
-    return this.toJSON(addedProduct)
+    return addedProduct.toJSON()
   }
 
   async allProducts() {
     const allProducts = await this.repo.allProducts()
 
-    return allProducts.map(product => this.toJSON(product))
+    return allProducts.map(product => product.toJSON())
   }
 
   async productById(id: string) {
@@ -88,7 +51,7 @@ class ProductService {
       throw new Error(`The product with the id: ${id} was not found.`)
     }
 
-    return this.toJSON(productById)
+    return productById.toJSON()
   }
 
   async deleteById(id: string) {
@@ -101,7 +64,7 @@ class ProductService {
 
     await this.repo.deleteById(id)
 
-    this.deleteProductImageFromFS(productById.image_url.value)
+    this.fileDeletionService.deleteProductImage(productById.image_url.value)
 
     return id
   }
@@ -125,7 +88,7 @@ class ProductService {
 
     const updatedProduct = await this.repo.updateProduct(validProduct)
 
-    return this.toJSON(updatedProduct)
+    return updatedProduct.toJSON()
   }
 }
 

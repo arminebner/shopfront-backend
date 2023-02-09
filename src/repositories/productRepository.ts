@@ -16,7 +16,7 @@ class ProductRepo {
         short_description: validProduct.short_description.value,
         description: validProduct.description.value,
         image_url: validProduct.image_url.value,
-        price: validProduct.price.value,
+        price: (validProduct.price as Money).value,
       },
     })
 
@@ -71,7 +71,7 @@ class ProductRepo {
         short_description: productToUpdate.short_description.value,
         description: productToUpdate.description.value,
         image_url: productToUpdate.image_url.value,
-        price: productToUpdate.price.value,
+        price: (productToUpdate.price as Money).value,
       },
     })
     return productFromData(data)
