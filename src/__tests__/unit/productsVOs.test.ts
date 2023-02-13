@@ -10,6 +10,8 @@ import {
 } from '../../model/valueObjects'
 import crypto from 'crypto'
 
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 function stringWithXChars(x: number) {
   return 'a'.repeat(x)
 }
@@ -18,6 +20,10 @@ describe('The id', () => {
   test('must be of type uuid', () => {
     const validId = new Id(crypto.randomUUID())
     expect(validId).toBeInstanceOf(Id)
+  })
+  test('gets populated with random uuid if input empty string', () => {
+    const randomId = new Id('')
+    expect(randomId.value).toMatch(uuidRegex)
   })
   test('throws an error if not of type uuid', () => {
     expect(() => {

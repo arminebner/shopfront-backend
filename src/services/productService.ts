@@ -1,9 +1,9 @@
-import ProductRepo from '../repositories/productRepository'
-import Product from '../types/product'
-import log from '../utils/logger'
-import ProductEntity from '../model/product'
 import { Id, Name, ShortDescription, Description, Price, ImageUrl } from '../model/valueObjects'
 import FileDeletionService from '../openServices/imageDeletionService'
+import log from '../utils/logger'
+import Product from '../types/product'
+import ProductEntity from '../model/product'
+import ProductRepo from '../repositories/productRepository'
 class ProductService {
   repo: ProductRepo
   fileDeletionService: FileDeletionService
@@ -17,7 +17,6 @@ class ProductService {
     const existingProduct = await this.repo.productNameExists(productToAdd.name)
 
     if (existingProduct) {
-      console.log(this.fileDeletionService)
       this.fileDeletionService.deleteProductImage(productToAdd.image_url)
       log.error(`${productToAdd.name}: Productname already exists`)
       throw new Error('This product name is already taken.')

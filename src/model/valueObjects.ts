@@ -1,15 +1,19 @@
 import config from 'config'
+import crypto from 'crypto'
 
 const configCurrency = config.get<string>('currency')
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 class Id {
   readonly value: string
   constructor(id: string) {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-    if (!uuidRegex.test(id)) {
+    if (!id) {
+      this.value = crypto.randomUUID()
+    } else if (!uuidRegex.test(id)) {
       throw new Error('The provided id is invalid')
+    } else {
+      this.value = id
     }
-    this.value = id
   }
 }
 
