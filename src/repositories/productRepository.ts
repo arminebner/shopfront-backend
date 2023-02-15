@@ -1,6 +1,15 @@
 import { PrismaClient } from '@prisma/client'
 import ProductEntity from '../model/product'
-import { Id, Name, ShortDescription, Description, Money, ImageUrl } from '../model/valueObjects'
+import {
+  Id,
+  Name,
+  ShortDescription,
+  Description,
+  Money,
+  ImageUrl,
+  Category,
+  Quantity,
+} from '../model/valueObjects'
 class ProductRepo {
   prisma: PrismaClient
 
@@ -17,6 +26,9 @@ class ProductRepo {
         description: validProduct.description.value,
         image_url: validProduct.image_url.value,
         price: (validProduct.price as Money).value,
+        quantity: validProduct.quantity.value,
+        category: validProduct.category.value,
+        user_id: validProduct.user_id.value,
       },
     })
 
@@ -72,6 +84,9 @@ class ProductRepo {
         description: productToUpdate.description.value,
         image_url: productToUpdate.image_url.value,
         price: (productToUpdate.price as Money).value,
+        quantity: productToUpdate.quantity.value,
+        category: productToUpdate.category.value,
+        user_id: productToUpdate.user_id.value,
       },
     })
     return productFromData(data)
@@ -85,15 +100,11 @@ function productFromData(data: any) {
     new ShortDescription(data.short_description),
     new Description(data.description),
     new Money(data.price),
-    new ImageUrl(data.image_url)
+    new ImageUrl(data.image_url),
+    new Quantity(data.quantity),
+    new Category(data.category),
+    new Id(data.user_id)
   )
-}
-
-function mapDecimalToString(product: any) {
-  return {
-    ...product,
-    price: product.price.toString(),
-  }
 }
 
 export default ProductRepo

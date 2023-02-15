@@ -7,6 +7,8 @@ import {
   Money,
   Name,
   ShortDescription,
+  Quantity,
+  Category,
 } from '../model/valueObjects'
 
 const host = config.get<string>('host')
@@ -18,7 +20,10 @@ class ProductEntity {
     public short_description: ShortDescription,
     public description: Description,
     public price: Price | Money,
-    public image_url: ImageUrl
+    public image_url: ImageUrl,
+    public quantity: Quantity,
+    public category: Category,
+    public user_id: Id
   ) {}
 
   toJSON() {
@@ -29,6 +34,9 @@ class ProductEntity {
       description: this.description.value,
       price: (this.price as Money).valueToPrice().value,
       image_url: `${host}/${this.image_url.value}`,
+      quantity: this.quantity.value,
+      category: this.category.value,
+      user_id: this.user_id.value,
     }
   }
 }

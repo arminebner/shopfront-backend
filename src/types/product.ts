@@ -5,4 +5,7 @@ export default interface Product2 {
   description: string
   price: string
   image_url: string
+  quantity: number
+  category: string
+  user_id: string
 }

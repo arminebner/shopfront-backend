@@ -3,6 +3,7 @@ import crypto from 'crypto'
 
 const configCurrency = config.get<string>('currency')
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const categoryRegex = /^(Category1|Category2|Category3)$/
 
 class Id {
   readonly value: string
@@ -98,6 +99,26 @@ class ImageUrl {
   }
 }
 
-export { Id, Name, ShortDescription, Description, Price, Money, ImageUrl }
+class Quantity {
+  readonly value: number
+  constructor(quantity: number) {
+    if (typeof quantity !== 'number') {
+      throw new Error('The quantity is invalid')
+    } else if (quantity < 0) {
+      throw new Error('The quantity is invalid')
+    }
+    this.value = quantity
+  }
+}
 
-//export types from that ?
+class Category {
+  readonly value: string
+  constructor(category: string) {
+    if (!categoryRegex.test(category)) {
+      throw new Error('The category is invalid')
+    }
+    this.value = category
+  }
+}
+
+export { Id, Name, ShortDescription, Description, Price, Money, ImageUrl, Quantity, Category }

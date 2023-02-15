@@ -1,4 +1,13 @@
-import { Id, Name, ShortDescription, Description, Price, ImageUrl } from '../model/valueObjects'
+import {
+  Id,
+  Name,
+  ShortDescription,
+  Description,
+  Price,
+  ImageUrl,
+  Quantity,
+  Category,
+} from '../model/valueObjects'
 import FileDeletionService from '../openServices/imageDeletionService'
 import log from '../utils/logger'
 import Product from '../types/product'
@@ -28,7 +37,10 @@ class ProductService {
       new ShortDescription(productToAdd.short_description),
       new Description(productToAdd.description),
       new Price(productToAdd.price).valueToMoney(),
-      new ImageUrl(productToAdd.image_url)
+      new ImageUrl(productToAdd.image_url),
+      new Quantity(productToAdd.quantity),
+      new Category(productToAdd.category),
+      new Id(productToAdd.user_id)
     )
 
     const addedProduct = await this.repo.addProduct(validProduct)
@@ -82,7 +94,10 @@ class ProductService {
       new ShortDescription(productToUpdate.short_description),
       new Description(productToUpdate.description),
       new Price(productToUpdate.price).valueToMoney(),
-      new ImageUrl(productToUpdate.image_url)
+      new ImageUrl(productToUpdate.image_url),
+      new Quantity(productToUpdate.quantity),
+      new Category(productToUpdate.category),
+      new Id(productToUpdate.user_id)
     )
 
     const updatedProduct = await this.repo.updateProduct(validProduct)

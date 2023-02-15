@@ -1,12 +1,27 @@
-import { afterAll, afterEach, describe, expect, test } from 'vitest'
+import { afterAll, afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { PrismaClient } from '@prisma/client'
-import { v4 as uuidv4 } from 'uuid'
+import crypto from 'crypto'
 import ProductService from '../../services/productService'
 import Product from '../../types/product'
 import ProductRepo from '../../repositories/productRepository'
+import UserService from '../../userBoundedContext/services/userService'
+import UserRepo from '../../userBoundedContext/repositories/userRepository'
 
 const prisma = new PrismaClient()
 const productService = new ProductService(new ProductRepo(prisma))
+
+const userId = crypto.randomUUID()
+
+async function createUser() {
+  const userService = new UserService(new UserRepo(prisma))
+  const user = {
+    id: userId,
+    first_name: 'Test',
+    last_name: 'User',
+    email: 'testuser@test.de',
+  }
+  return await userService.addUser(user)
+}
 
 function createProduct(amount: number) {
   const array = Array.from({ length: amount }, (_, i) => i + 1)
@@ -14,21 +29,30 @@ function createProduct(amount: number) {
 
   array.forEach(element => {
     products.push({
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       name: `Product${element}: ${Date.now()}`,
       short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'file_name.jpg',
       price: '5.50',
+      quantity: 1,
+      category: 'Category1',
+      user_id: userId,
     })
   })
 
   return products
 }
 
+beforeEach(async () => {
+  await createUser()
+})
+
 afterEach(async () => {
   const deleteProducts = prisma.product.deleteMany()
+  const deleteUsers = prisma.user.deleteMany()
   await prisma.$transaction([deleteProducts])
+  await prisma.$transaction([deleteUsers])
 })
 
 afterAll(async () => {
@@ -93,7 +117,7 @@ describe('The product service', () => {
   })
 
   test('throws error, if product id was not found', async () => {
-    const id = uuidv4()
+    const id = crypto.randomUUID()
     try {
       await productService.productById(id)
     } catch (error: any) {
@@ -125,6 +149,9 @@ describe('The product service', () => {
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'file_name.jpg',
       price: '10.00',
+      quantity: 4,
+      category: 'Category3',
+      user_id: userId,
     }
 
     const updatedProduct = await productService.updateProduct(productToUpdate)

@@ -11,10 +11,24 @@ datasource db {
 }
 
 model Product {
+  @@map(name: "product")
   id String @default(uuid()) @id
   name String @db.VarChar(30) @unique
   short_description String @db.VarChar(100)
   description String ? @db.VarChar(500)
   image_url String
   price Int
+  quantity Int
+  category String
+  user User @relation(fields: [user_id], references: [id])
+  user_id String
+}
+
+model User {
+  @@map(name: "user")
+  id String @default(uuid()) @id
+  first_name String
+  last_name String
+  email String @unique
+  products Product[]
 }

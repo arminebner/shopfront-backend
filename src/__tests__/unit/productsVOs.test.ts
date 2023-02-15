@@ -7,6 +7,8 @@ import {
   Price,
   Money,
   ImageUrl,
+  Quantity,
+  Category,
 } from '../../model/valueObjects'
 import crypto from 'crypto'
 
@@ -42,7 +44,7 @@ describe('The name', () => {
       new Name(stringWithXChars(31))
     }).toThrowError('The provided name is invalid')
   })
-  test('throws error if less than 1 or more than 30 chars long', () => {
+  test('throws error if less than 1 char long', () => {
     expect(() => {
       new Name(stringWithXChars(0))
     }).toThrowError('The provided name is invalid')
@@ -112,5 +114,41 @@ describe('The image url', () => {
     expect(() => {
       new ImageUrl('notSupported.gif')
     }).toThrowError('The image url is invalid')
+  })
+})
+
+describe('The quantity', () => {
+  test('can only be a positive integer', () => {
+    const validQuantity = new Quantity(1)
+    expect(validQuantity).toBeInstanceOf(Quantity)
+  })
+  test('throws error if negative value', () => {
+    expect(() => {
+      new Quantity(-1)
+    }).toThrowError('The quantity is invalid')
+  })
+  test('throws error for unsupported input', () => {
+    expect(() => {
+      // @ts-ignore
+      new Quantity('1')
+    }).toThrowError('The quantity is invalid')
+  })
+})
+
+describe('The category', () => {
+  test('can only be "Category1|Category2|Category3"', () => {
+    const validCategory = new Category('Category1')
+    expect(validCategory).toBeInstanceOf(Category)
+
+    const validCategory2 = new Category('Category2')
+    expect(validCategory2).toBeInstanceOf(Category)
+
+    const validCategory3 = new Category('Category3')
+    expect(validCategory3).toBeInstanceOf(Category)
+  })
+  test('throws error if different value', () => {
+    expect(() => {
+      new Category('NotACategory')
+    }).toThrowError('The category is invalid')
   })
 })
