@@ -9,6 +9,26 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient({
   log: ['info', 'warn', 'error'],
 })
+async function createUser() {
+  const userExists = await prisma.user.findUnique({
+    where: {
+      id: 'de3d5302-5ba2-40f4-b9f4-c8537ffc0671',
+    },
+  })
+
+  if (userExists) return
+
+  await prisma.user.create({
+    data: {
+      id: 'de3d5302-5ba2-40f4-b9f4-c8537ffc0671',
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'test.user@example.com',
+    },
+  })
+}
+createUser()
+
 const productService = new ProductService(new ProductRepo(prisma))
 const productRouter = express.Router()
 
@@ -37,6 +57,7 @@ productRouter.post(
     const validProduct = {
       ...req.body,
       image_url: `${req.file?.filename}`,
+      user_id: 'de3d5302-5ba2-40f4-b9f4-c8537ffc0671',
     }
     try {
       const result = await productService.addProduct(validProduct)
@@ -65,6 +86,7 @@ productRouter.put(
     const validProduct = {
       ...req.body,
       image_url: `${req.file?.filename}`,
+      user_id: 'de3d5302-5ba2-40f4-b9f4-c8537ffc0671',
     }
     try {
       const result = await productService.updateProduct(validProduct)

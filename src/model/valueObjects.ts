@@ -103,7 +103,7 @@ class Quantity {
   readonly value: number
   constructor(quantity: number) {
     if (typeof quantity !== 'number') {
-      throw new Error('The quantity is invalid')
+      throw new Error('The quantity is not of type number')
     } else if (quantity < 0) {
       throw new Error('The quantity is invalid')
     }

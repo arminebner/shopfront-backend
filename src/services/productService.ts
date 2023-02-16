@@ -22,7 +22,7 @@ class ProductService {
     this.fileDeletionService = new FileDeletionService()
   }
 
-  async addProduct(productToAdd: Product) {
+  async addProduct(productToAdd: any) {
     const existingProduct = await this.repo.productNameExists(productToAdd.name)
 
     if (existingProduct) {
@@ -38,7 +38,7 @@ class ProductService {
       new Description(productToAdd.description),
       new Price(productToAdd.price).valueToMoney(),
       new ImageUrl(productToAdd.image_url),
-      new Quantity(productToAdd.quantity),
+      new Quantity(parseInt(productToAdd.quantity)),
       new Category(productToAdd.category),
       new Id(productToAdd.user_id)
     )
@@ -80,7 +80,7 @@ class ProductService {
     return id
   }
 
-  async updateProduct(productToUpdate: Product) {
+  async updateProduct(productToUpdate: any) {
     const productById = await this.repo.productById(productToUpdate.id)
 
     if (!productById) {
@@ -95,7 +95,7 @@ class ProductService {
       new Description(productToUpdate.description),
       new Price(productToUpdate.price).valueToMoney(),
       new ImageUrl(productToUpdate.image_url),
-      new Quantity(productToUpdate.quantity),
+      new Quantity(parseInt(productToUpdate.quantity)),
       new Category(productToUpdate.category),
       new Id(productToUpdate.user_id)
     )
