@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import UserEntity from '../model/user'
-import { Email, FirstName, Id, LastName } from '../model/valueObjects'
+import { Email, FirstName, Id, LastName, PwHash } from '../model/valueObjects'
 
 class UserRepo {
   prisma: PrismaClient
@@ -16,6 +16,7 @@ class UserRepo {
         first_name: validUser.firstName.value,
         last_name: validUser.lastName.value,
         email: validUser.email.value,
+        pw_hash: validUser.pwHash.value,
       },
     })
     return userFromData(data)
@@ -29,6 +30,15 @@ class UserRepo {
     })
     return data ? userFromData(data) : undefined
   }
+
+  async userByEmail(email: Email) {
+    const data = await this.prisma.user.findUnique({
+      where: {
+        email: email.value,
+      },
+    })
+    return data ? userFromData(data) : undefined
+  }
 }
 
 function userFromData(data: any) {
@@ -36,7 +46,8 @@ function userFromData(data: any) {
     new Id(data.id),
     new FirstName(data.first_name),
     new LastName(data.last_name),
-    new Email(data.email)
+    new Email(data.email),
+    new PwHash(data.pw_hash)
   )
 }
 

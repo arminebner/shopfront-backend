@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import crypto from 'crypto'
-import { Id, FirstName, LastName, Email } from '../../userBoundedContext/model/valueObjects'
+import { Id, FirstName, LastName, Email, PwHash } from '../../userBoundedContext/model/valueObjects'
 
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -67,5 +67,12 @@ describe('The email', () => {
     expect(() => {
       new LastName(stringWithXChars(21))
     }).toThrowError('The provided last name is invalid')
+  })
+})
+
+describe('The password hash', () => {
+  test('must be a string', () => {
+    const validPwHash = new PwHash('sdf798sd7f97sd9f87s')
+    expect(validPwHash).toBeInstanceOf(PwHash)
   })
 })

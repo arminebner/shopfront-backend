@@ -3,9 +3,10 @@ import { PrismaClient } from '@prisma/client'
 import UserService from '../../userBoundedContext/services/userService'
 import UserRepo from '../../userBoundedContext/repositories/userRepository'
 import crypto from 'crypto'
+import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
 
 const prisma = new PrismaClient()
-const userService = new UserService(new UserRepo(prisma))
+const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(prisma))
 
 afterEach(async () => {
   const deleteUsers = prisma.user.deleteMany()
@@ -25,9 +26,39 @@ describe('The user service', () => {
       email: 'testuser@test.de',
     }
 
-    const addedUser = await userService.addUser(user)
+    const addedUser = await userService.addUser({
+      ...user,
+      password: '983w747na8worzon439rzfona4rv',
+    })
 
-    expect(addedUser).toEqual(user)
+    expect(addedUser).toEqual({ ...user })
+  })
+
+  test('throws error, if user with email already exists', async () => {
+    const id1 = crypto.randomUUID()
+    const id2 = crypto.randomUUID()
+    const user1 = {
+      id: id1,
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'testuser@test.de',
+      password: '983w747na8worzon439rzfona4rv',
+    }
+    const user2 = {
+      id: id2,
+      first_name: 'Test2',
+      last_name: 'User2',
+      email: 'testuser@test.de',
+      password: '983w747na8worzon439rzfona4rv',
+    }
+
+    await userService.addUser(user1)
+
+    try {
+      await userService.addUser(user2)
+    } catch (error: any) {
+      expect(error.message).toBe('The user with the email: testuser@test.de already exists.')
+    }
   })
 
   test('gets a user by id', async () => {
@@ -46,11 +77,13 @@ describe('The user service', () => {
       email: 'testuser_2@test.de',
     }
 
-    await userService.addUser(user1)
-    await userService.addUser(user2)
+    await userService.addUser({ ...user1, password: '983w747na8worzon439rzfona4rv' })
+    await userService.addUser({ ...user2, password: '983w747na8worzon439rzfona4rv' })
 
     const user2ById = await userService.userById(id2)
 
     expect(user2ById).toEqual(user2)
   })
+
+  // TODO logs a user in
 })

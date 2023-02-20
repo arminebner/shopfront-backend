@@ -48,4 +48,15 @@ class Email {
   }
 }
 
-export { Id, FirstName, LastName, Email }
+class PwHash {
+  //$2b$10$IlirWTS/YMPt9krRzgQRr.GDuxNQxpgr7tmy1lvjDmGjz7ipBiBqG
+  readonly value: string
+  constructor(pwHash: string) {
+    if (pwHash.length > 60) {
+      throw new Error('The provided pwHash is invalid')
+    }
+    this.value = pwHash
+  }
+}
+
+export { Id, FirstName, LastName, Email, PwHash }

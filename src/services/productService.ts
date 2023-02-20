@@ -10,11 +10,10 @@ import {
 } from '../model/valueObjects'
 import FileDeletionService from '../openServices/imageDeletionService'
 import log from '../utils/logger'
-import Product from '../types/product'
 import ProductEntity from '../model/product'
 import ProductRepo from '../repositories/productRepository'
 class ProductService {
-  repo: ProductRepo
+  private repo: ProductRepo
   fileDeletionService: FileDeletionService
 
   constructor(repo: ProductRepo) {

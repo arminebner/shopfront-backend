@@ -10,6 +10,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Session {
+  @@map(name: "session")
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+}
+
 model Product {
   @@map(name: "product")
   id String @default(uuid()) @id
@@ -30,5 +39,17 @@ model User {
   first_name String
   last_name String
   email String @unique
+  pw_hash String
   products Product[]
+  refresh_token RefreshToken[]
+}
+
+model RefreshToken {
+  @@map(name: "refresh_token")
+  id String @default(uuid()) @id
+  refresh_token String
+  created_at BigInt
+  expires_at BigInt
+  user User @relation(fields: [user_id], references: [id])
+  user_id String
 }

@@ -6,6 +6,7 @@ import Product from '../../types/product'
 import ProductRepo from '../../repositories/productRepository'
 import UserService from '../../userBoundedContext/services/userService'
 import UserRepo from '../../userBoundedContext/repositories/userRepository'
+import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
 
 const prisma = new PrismaClient()
 const productService = new ProductService(new ProductRepo(prisma))
@@ -13,12 +14,13 @@ const productService = new ProductService(new ProductRepo(prisma))
 const userId = crypto.randomUUID()
 
 async function createUser() {
-  const userService = new UserService(new UserRepo(prisma))
+  const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(prisma))
   const user = {
     id: userId,
     first_name: 'Test',
     last_name: 'User',
-    email: 'testuser@test.de',
+    email: `testuser${Date.now()}@test.de`,
+    password: '983w747na8worzon439rzfona4rv',
   }
   return await userService.addUser(user)
 }

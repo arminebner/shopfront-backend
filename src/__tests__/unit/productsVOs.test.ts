@@ -131,7 +131,7 @@ describe('The quantity', () => {
     expect(() => {
       // @ts-ignore
       new Quantity('1')
-    }).toThrowError('The quantity is invalid')
+    }).toThrowError('The quantity is not of type number')
   })
 })
 

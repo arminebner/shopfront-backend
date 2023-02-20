@@ -4,11 +4,8 @@ import { validProduct } from '../validation/productValidation'
 import ProductRepo from '../repositories/productRepository'
 import express, { Request, Response } from 'express'
 import upload from '../utils/initMulter'
-import { PrismaClient } from '@prisma/client'
+import prisma from '../../prisma/client'
 
-const prisma = new PrismaClient({
-  log: ['info', 'warn', 'error'],
-})
 async function createUser() {
   const userExists = await prisma.user.findUnique({
     where: {
@@ -24,6 +21,7 @@ async function createUser() {
       first_name: 'Test',
       last_name: 'User',
       email: 'test.user@example.com',
+      pw_hash: '983w747na8worzon439rzfona4rv',
     },
   })
 }
