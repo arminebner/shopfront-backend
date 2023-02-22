@@ -4,11 +4,13 @@ import UserService from '../../userBoundedContext/services/userService'
 import UserRepo from '../../userBoundedContext/repositories/userRepository'
 import crypto from 'crypto'
 import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
+import { Jwt } from '../../common/model/valueObjects'
 
 const prisma = new PrismaClient()
 const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(prisma))
 
 afterEach(async () => {
+  //TODO delete only the user created in THIS test
   const deleteUsers = prisma.user.deleteMany()
   await prisma.$transaction([deleteUsers])
 })
@@ -86,4 +88,22 @@ describe('The user service', () => {
   })
 
   // TODO logs a user in
+  /*   test('creates and sends access and refresh token', async () => {
+    const id1 = crypto.randomUUID()
+    const user1 = {
+      id: id1,
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'testuser@test.de',
+    }
+    await userService.addUser({ ...user1, password: '983w747na8worzon439rzfona4rv' })
+
+    const tokens = await userService.loginUser('testuser@test.de', '983w747na8worzon439rzfona4rv')
+
+    console.log(tokens)
+
+    expect(tokens.accessToken).toBeInstanceOf(Jwt)
+  }) */
+  // TODO refreshs token
+  // TODO logs a user out
 })

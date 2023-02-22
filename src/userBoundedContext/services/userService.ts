@@ -8,6 +8,10 @@ import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
 import RefreshTokenEntity from '../../common/model/refreshTokenEntity'
 import { Jwt, TokenDate, TokenId } from '../../common/model/valueObjects'
 
+interface JwtPayload {
+  userId: string
+}
+
 class UserService {
   private userRepo: UserRepo
   private refreshTokenRepo: RefreshTokenRepo
@@ -59,15 +63,16 @@ class UserService {
       throw new Error(`401 unauthorized`)
     }
 
+    // TODO: add role to payload
     const accessToken = jwt.sign(
-      { userId: userByEmail.id },
+      { userId: userByEmail.id.value },
       process.env.ACCESS_TOKEN_SECRET as string,
       {
-        expiresIn: '30s',
+        expiresIn: '60s',
       }
     )
     const refreshToken = jwt.sign(
-      { userId: userByEmail.id },
+      { userId: userByEmail.id.value },
       process.env.REFRESH_TOKEN_SECRET as string,
       {
         expiresIn: '1d',
@@ -88,9 +93,38 @@ class UserService {
 
     const savedRefreshToken = await this.refreshTokenRepo.addToken(validRefreshToken)
 
-    console.log(savedRefreshToken)
+    return { accessToken: accessToken, refreshToken: savedRefreshToken.refreshToken.value }
+  }
 
-    return userByEmail.toJSON()
+  async refreshAccess(refreshToken: string) {
+    // TODO jwt validation with jwt VO ?!
+    const existingRefreshToken = await this.refreshTokenRepo.tokenByTokenstring(refreshToken)
+    if (!existingRefreshToken) {
+      log.error(`Unauthorized`)
+      throw new Error(`Unauthorized`)
+    }
+
+    const existingUserById = await this.userRepo.userById(existingRefreshToken.userId)
+    let accessToken = null
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string, (error, decodedToken) => {
+      if (error || existingUserById?.id.value !== (decodedToken as JwtPayload).userId) {
+        throw new Error('Unauthorized')
+      }
+      accessToken = jwt.sign(
+        { userId: (decodedToken as JwtPayload).userId },
+        process.env.ACCESS_TOKEN_SECRET as string,
+        {
+          expiresIn: '60s',
+        }
+      )
+    })
+    return { accessToken }
+  }
+
+  async logoutUser(refreshToken: string) {
+    // TODO jwt validation with jwt VO ?!
+    this.refreshTokenRepo.deleteToken(refreshToken)
   }
 
   async userById(id: string) {

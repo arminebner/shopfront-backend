@@ -36,6 +36,7 @@ class TokenDate {
     this.value = createdAt
   }
   expiresAt(expiresAt: number) {
+    // TODO return new TokenDate with computed value
     return this.value + expiresAt
   }
 }

@@ -10,8 +10,7 @@ class RefreshTokenRepo {
     this.prisma = client
   }
 
-  // TODO token as VO
-  async addToken(refreshToken: RefreshTokenEntity) {
+  async addToken(refreshToken: RefreshTokenEntity): Promise<RefreshTokenEntity> {
     const data = await this.prisma.refreshToken.create({
       data: {
         id: refreshToken.id.value,
@@ -22,6 +21,23 @@ class RefreshTokenRepo {
       },
     })
     return tokenFromData(data)
+  }
+
+  async tokenByTokenstring(tokenString: string): Promise<RefreshTokenEntity> {
+    const data = await this.prisma.refreshToken.findUnique({
+      where: {
+        refresh_token: tokenString,
+      },
+    })
+    return tokenFromData(data)
+  }
+
+  async deleteToken(tokenString: string) {
+    const data = await this.prisma.refreshToken.delete({
+      where: {
+        refresh_token: tokenString,
+      },
+    })
   }
 }
 
@@ -36,10 +52,3 @@ function tokenFromData(data: any) {
 }
 
 export default RefreshTokenRepo
-
-/* id String @default(uuid()) @id
-refresh_token String
-created_at DateTime @default(now())
-expires_at DateTime
-user User @relation(fields: [user_id], references: [id])
-user_id String */
