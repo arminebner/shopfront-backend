@@ -10,6 +10,19 @@ const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(p
 
 router.get('/api/users/healthcheck', (_: Request, res: Response) => res.sendStatus(200))
 
+router.get('/api/users/user', verifyJwt, async (req: Request, res: Response) => {
+  const cookies = req.cookies
+
+  if (!cookies?.jwt) return res.sendStatus(204)
+  const refreshToken = cookies.jwt
+  try {
+    const result = await userService.userByToken(refreshToken)
+    res.json(result)
+  } catch (error: any) {
+    res.status(400).send(error.message)
+  }
+})
+
 router.post('/api/users/register', async (req: Request, res: Response) => {
   const { firstName, lastName, email, password } = req.body
 
@@ -41,6 +54,8 @@ router.post('/api/users/access', async (req: Request, res: Response) => {
 
     res.cookie('jwt', result.refreshToken, {
       httpOnly: true,
+      sameSite: 'none',
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     })
     res.json({ accessToken: result.accessToken })
@@ -63,7 +78,6 @@ router.get('/api/users/refreshAccess', async (req: Request, res: Response) => {
   }
 })
 
-// TODO on client also delete access token
 router.get('/api/users/logout', async (req: Request, res: Response) => {
   const cookies = req.cookies
   if (!cookies?.jwt) return res.sendStatus(204)
@@ -71,15 +85,11 @@ router.get('/api/users/logout', async (req: Request, res: Response) => {
 
   try {
     await userService.logoutUser(refreshToken)
-    res.clearCookie('jwt', { httpOnly: true })
+    res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true })
     res.sendStatus(204)
   } catch (error: any) {
     res.status(400).send(error.message)
   }
-})
-
-router.get('/api/users/protected', verifyJwt, async (req: Request, res: Response) => {
-  res.json({ message: 'you made it' })
 })
 
 export default router

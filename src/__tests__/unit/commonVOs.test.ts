@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { TokenDate, Jwt } from '../../common/model/valueObjects'
+import { TokenDate, Jwt, Password } from '../../common/model/valueObjects'
 
 describe('The Jwt VO', () => {
   test('must be in the format of a jwt', () => {
@@ -29,5 +29,18 @@ describe('The TokenDate VO', () => {
     const oneDay = 86400000
     const validToken = new TokenDate(createdAt)
     expect(validToken.expiresAt(oneDay)).toEqual(createdAt + oneDay)
+  })
+})
+
+describe('The Password VO', () => {
+  test('must be at least 8 characters long', () => {
+    const validPassword = new Password('12345678')
+    expect(validPassword).toBeInstanceOf(Password)
+  })
+  test('throws error if in other format', () => {
+    expect(() => {
+      //@ts-ignore
+      new Password('1234')
+    }).toThrowError('The provided password is invalid')
   })
 })

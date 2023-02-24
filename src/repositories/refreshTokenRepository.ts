@@ -23,19 +23,19 @@ class RefreshTokenRepo {
     return tokenFromData(data)
   }
 
-  async tokenByTokenstring(tokenString: string): Promise<RefreshTokenEntity> {
+  async tokenByTokenstring(token: Jwt): Promise<RefreshTokenEntity> {
     const data = await this.prisma.refreshToken.findUnique({
       where: {
-        refresh_token: tokenString,
+        refresh_token: token.value,
       },
     })
     return tokenFromData(data)
   }
 
-  async deleteToken(tokenString: string) {
+  async deleteToken(token: Jwt) {
     const data = await this.prisma.refreshToken.delete({
       where: {
-        refresh_token: tokenString,
+        refresh_token: token.value,
       },
     })
   }

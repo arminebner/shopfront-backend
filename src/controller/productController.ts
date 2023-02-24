@@ -5,6 +5,7 @@ import ProductRepo from '../repositories/productRepository'
 import express, { Request, Response } from 'express'
 import upload from '../utils/initMulter'
 import prisma from '../../prisma/client'
+import verifyJwt from '../middleware/verirfyJwt'
 
 async function createUser() {
   const userExists = await prisma.user.findUnique({
@@ -49,6 +50,7 @@ productRouter.get('/api/product/:id', async (req: Request, res: Response) => {
 
 productRouter.post(
   '/api/product',
+  verifyJwt,
   upload.single('image_url'),
   validateResource(validProduct),
   async (req: Request, res: Response) => {
@@ -66,18 +68,9 @@ productRouter.post(
   }
 )
 
-productRouter.delete('/api/product/:id', async (req: Request, res: Response) => {
-  const id = req.params.id as string
-  try {
-    const result = await productService.deleteById(id)
-    res.json(result)
-  } catch (error: any) {
-    res.status(400).send(error.message)
-  }
-})
-
 productRouter.put(
   '/api/product',
+  verifyJwt,
   upload.single('image_url'),
   validateResource(validProduct),
   async (req: Request, res: Response) => {
@@ -94,5 +87,15 @@ productRouter.put(
     }
   }
 )
+
+productRouter.delete('/api/product/:id', verifyJwt, async (req: Request, res: Response) => {
+  const id = req.params.id as string
+  try {
+    const result = await productService.deleteById(id)
+    res.json(result)
+  } catch (error: any) {
+    res.status(400).send(error.message)
+  }
+})
 
 export default productRouter

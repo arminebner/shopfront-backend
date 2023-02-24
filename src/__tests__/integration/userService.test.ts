@@ -105,5 +105,6 @@ describe('The user service', () => {
     expect(tokens.accessToken).toBeInstanceOf(Jwt)
   }) */
   // TODO refreshs token
+  // TODO get logged in user via userService.userByToken
   // TODO logs a user out
 })

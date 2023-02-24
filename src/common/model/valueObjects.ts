@@ -41,4 +41,14 @@ class TokenDate {
   }
 }
 
-export { TokenId, Jwt, TokenDate }
+class Password {
+  readonly value: string
+  constructor(password: string) {
+    if (password.length < 8) {
+      throw new Error('The provided password is invalid')
+    }
+    this.value = password
+  }
+}
+
+export { TokenId, Jwt, TokenDate, Password }

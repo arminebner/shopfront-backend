@@ -6,7 +6,7 @@ import User from '../model/user'
 import UserRepo from '../repositories/userRepository'
 import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
 import RefreshTokenEntity from '../../common/model/refreshTokenEntity'
-import { Jwt, TokenDate, TokenId } from '../../common/model/valueObjects'
+import { Jwt, TokenDate, TokenId, Password } from '../../common/model/valueObjects'
 
 interface JwtPayload {
   userId: string
@@ -23,7 +23,7 @@ class UserService {
 
   // TODO change to registerUser
   async addUser(user: any) {
-    // TODO validate PW through VO (not of user, but maybe common?)
+    const validPassword = new Password(user.password)
     const validEmail = new Email(user.email)
     const userWithEmail = await this.userRepo.userByEmail(validEmail)
 
@@ -32,7 +32,7 @@ class UserService {
       throw new Error(`The user with the email: ${user.email} already exists.`)
     }
 
-    const pwHash = await bcrypt.hash(user.password, 10)
+    const pwHash = await bcrypt.hash(validPassword.value, 10)
 
     const validUser = new User(
       new Id(user.id),
@@ -68,7 +68,7 @@ class UserService {
       { userId: userByEmail.id.value },
       process.env.ACCESS_TOKEN_SECRET as string,
       {
-        expiresIn: '60s',
+        expiresIn: '900s',
       }
     )
     const refreshToken = jwt.sign(
@@ -97,8 +97,8 @@ class UserService {
   }
 
   async refreshAccess(refreshToken: string) {
-    // TODO jwt validation with jwt VO ?!
-    const existingRefreshToken = await this.refreshTokenRepo.tokenByTokenstring(refreshToken)
+    const validJwt = new Jwt(refreshToken)
+    const existingRefreshToken = await this.refreshTokenRepo.tokenByTokenstring(validJwt)
     if (!existingRefreshToken) {
       log.error(`Unauthorized`)
       throw new Error(`Unauthorized`)
@@ -115,7 +115,7 @@ class UserService {
         { userId: (decodedToken as JwtPayload).userId },
         process.env.ACCESS_TOKEN_SECRET as string,
         {
-          expiresIn: '60s',
+          expiresIn: '900s',
         }
       )
     })
@@ -123,8 +123,8 @@ class UserService {
   }
 
   async logoutUser(refreshToken: string) {
-    // TODO jwt validation with jwt VO ?!
-    this.refreshTokenRepo.deleteToken(refreshToken)
+    const validJwt = new Jwt(refreshToken)
+    await this.refreshTokenRepo.deleteToken(validJwt)
   }
 
   async userById(id: string) {
@@ -137,6 +137,19 @@ class UserService {
     }
 
     return userById.toJSON()
+  }
+
+  async userByToken(refreshToken: string) {
+    const validJwt = new Jwt(refreshToken)
+    const existingRefreshToken = await this.refreshTokenRepo.tokenByTokenstring(validJwt)
+    if (!existingRefreshToken) {
+      log.error(`Unauthorized`)
+      throw new Error(`Unauthorized`)
+    }
+
+    const existingUserById = await this.userRepo.userById(existingRefreshToken.userId)
+
+    return existingUserById?.toJSON()
   }
 }
 
