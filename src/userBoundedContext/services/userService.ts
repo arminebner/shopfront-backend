@@ -63,8 +63,8 @@ class UserService {
       throw new Error(`401 unauthorized`)
     }
 
-    // TODO: add role to payload
     const accessToken = jwt.sign(
+      // TODO add user name and role
       { userId: userByEmail.id.value },
       process.env.ACCESS_TOKEN_SECRET as string,
       {
@@ -111,6 +111,7 @@ class UserService {
       if (error || existingUserById?.id.value !== (decodedToken as JwtPayload).userId) {
         throw new Error('Unauthorized')
       }
+      // TODO add user name and role
       accessToken = jwt.sign(
         { userId: (decodedToken as JwtPayload).userId },
         process.env.ACCESS_TOKEN_SECRET as string,

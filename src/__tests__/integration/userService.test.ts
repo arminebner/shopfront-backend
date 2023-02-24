@@ -4,7 +4,6 @@ import UserService from '../../userBoundedContext/services/userService'
 import UserRepo from '../../userBoundedContext/repositories/userRepository'
 import crypto from 'crypto'
 import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
-import { Jwt } from '../../common/model/valueObjects'
 
 const prisma = new PrismaClient()
 const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(prisma))

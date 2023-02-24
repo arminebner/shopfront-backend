@@ -7,27 +7,6 @@ import upload from '../utils/initMulter'
 import prisma from '../../prisma/client'
 import verifyJwt from '../middleware/verirfyJwt'
 
-async function createUser() {
-  const userExists = await prisma.user.findUnique({
-    where: {
-      id: 'de3d5302-5ba2-40f4-b9f4-c8537ffc0671',
-    },
-  })
-
-  if (userExists) return
-
-  await prisma.user.create({
-    data: {
-      id: 'de3d5302-5ba2-40f4-b9f4-c8537ffc0671',
-      first_name: 'Test',
-      last_name: 'User',
-      email: 'test.user@example.com',
-      pw_hash: '983w747na8worzon439rzfona4rv',
-    },
-  })
-}
-createUser()
-
 const productService = new ProductService(new ProductRepo(prisma))
 const productRouter = express.Router()
 
@@ -57,6 +36,7 @@ productRouter.post(
     const validProduct = {
       ...req.body,
       image_url: `${req.file?.filename}`,
+      // TODO: set user_id to user id from jwt cookie payload
       user_id: 'de3d5302-5ba2-40f4-b9f4-c8537ffc0671',
     }
     try {
@@ -77,6 +57,7 @@ productRouter.put(
     const validProduct = {
       ...req.body,
       image_url: `${req.file?.filename}`,
+      // TODO: set user_id to user id from jwt cookie payload
       user_id: 'de3d5302-5ba2-40f4-b9f4-c8537ffc0671',
     }
     try {
