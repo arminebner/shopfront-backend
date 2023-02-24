@@ -22,7 +22,7 @@ class UserService {
   }
 
   // TODO change to registerUser
-  async addUser(user: any) {
+  async registerUser(user: any) {
     const validPassword = new Password(user.password)
     const validEmail = new Email(user.email)
     const userWithEmail = await this.userRepo.userByEmail(validEmail)
@@ -42,7 +42,7 @@ class UserService {
       new PwHash(pwHash)
     )
 
-    const addedUser = await this.userRepo.addUser(validUser)
+    const addedUser = await this.userRepo.registerUser(validUser)
 
     return addedUser.toJSON()
   }

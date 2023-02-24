@@ -37,7 +37,7 @@ router.post('/api/users/register', async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await userService.addUser(user)
+    const result = await userService.registerUser(user)
     res.status(201).json(result)
   } catch (error: any) {
     res.status(400).send(error.message)

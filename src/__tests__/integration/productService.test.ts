@@ -22,7 +22,7 @@ async function createUser() {
     email: `testuser${Date.now()}@test.de`,
     password: '983w747na8worzon439rzfona4rv',
   }
-  return await userService.addUser(user)
+  return await userService.registerUser(user)
 }
 
 function createProduct(amount: number) {

@@ -28,7 +28,7 @@ describe('The user service', () => {
       email: 'testuser@test.de',
     }
 
-    const addedUser = await userService.addUser({
+    const addedUser = await userService.registerUser({
       ...user,
       password: '983w747na8worzon439rzfona4rv',
     })
@@ -54,10 +54,10 @@ describe('The user service', () => {
       password: '983w747na8worzon439rzfona4rv',
     }
 
-    await userService.addUser(user1)
+    await userService.registerUser(user1)
 
     try {
-      await userService.addUser(user2)
+      await userService.registerUser(user2)
     } catch (error: any) {
       expect(error.message).toBe('The user with the email: testuser@test.de already exists.')
     }
@@ -79,8 +79,8 @@ describe('The user service', () => {
       email: 'testuser_2@test.de',
     }
 
-    await userService.addUser({ ...user1, password: '983w747na8worzon439rzfona4rv' })
-    await userService.addUser({ ...user2, password: '983w747na8worzon439rzfona4rv' })
+    await userService.registerUser({ ...user1, password: '983w747na8worzon439rzfona4rv' })
+    await userService.registerUser({ ...user2, password: '983w747na8worzon439rzfona4rv' })
 
     const user2ById = await userService.userById(id2)
 
@@ -96,7 +96,7 @@ describe('The user service', () => {
       last_name: 'User',
       email: 'testuser@test.de',
     }
-    await userService.addUser({ ...user1, password: '983w747na8worzon439rzfona4rv' })
+    await userService.registerUser({ ...user1, password: '983w747na8worzon439rzfona4rv' })
 
     const tokens = await userService.loginUser('testuser@test.de', '983w747na8worzon439rzfona4rv')
 

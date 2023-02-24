@@ -9,7 +9,7 @@ class UserRepo {
     this.prisma = client
   }
 
-  async addUser(validUser: UserEntity) {
+  async registerUser(validUser: UserEntity) {
     const data = await this.prisma.user.create({
       data: {
         id: validUser.id.value,
