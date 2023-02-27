@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import UserEntity from '../model/user'
-import { Email, FirstName, Id, LastName, PwHash } from '../model/valueObjects'
+import { Email, FirstName, Id, LastName, PwHash, Roles } from '../model/valueObjects'
 
 class UserRepo {
   prisma: PrismaClient
@@ -17,6 +17,7 @@ class UserRepo {
         last_name: validUser.lastName.value,
         email: validUser.email.value,
         pw_hash: validUser.pwHash.value,
+        roles: validUser.roles.value,
       },
     })
     return userFromData(data)
@@ -47,7 +48,8 @@ function userFromData(data: any) {
     new FirstName(data.first_name),
     new LastName(data.last_name),
     new Email(data.email),
-    new PwHash(data.pw_hash)
+    new PwHash(data.pw_hash),
+    new Roles(data.roles)
   )
 }
 

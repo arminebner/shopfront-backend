@@ -21,6 +21,7 @@ async function createUser() {
     last_name: 'User',
     email: `testuser${Date.now()}@test.de`,
     password: '983w747na8worzon439rzfona4rv',
+    roles: ['user'],
   }
   return await userService.registerUser(user)
 }

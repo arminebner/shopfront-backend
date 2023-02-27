@@ -2,6 +2,7 @@ import crypto from 'crypto'
 
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+const rolesRegex = /user|seller/
 
 class Id {
   readonly value: string
@@ -49,7 +50,7 @@ class Email {
 }
 
 class PwHash {
-  //$2b$10$IlirWTS/YMPt9krRzgQRr.GDuxNQxpgr7tmy1lvjDmGjz7ipBiBqG
+  // regex ^\$2b\$.{56}$
   readonly value: string
   constructor(pwHash: string) {
     if (pwHash.length > 60) {
@@ -59,4 +60,17 @@ class PwHash {
   }
 }
 
-export { Id, FirstName, LastName, Email, PwHash }
+class Roles {
+  // ts enum
+  readonly value: string[]
+  constructor(roles: string[]) {
+    roles.forEach(role => {
+      if (!rolesRegex.test(role)) {
+        throw new Error('The provided role is invalid')
+      }
+    })
+    this.value = roles
+  }
+}
+
+export { Id, FirstName, LastName, Email, PwHash, Roles }

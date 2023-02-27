@@ -1,4 +1,4 @@
-import { Id, FirstName, LastName, Email, PwHash } from '../model/valueObjects'
+import { Id, FirstName, LastName, Email, PwHash, Roles } from '../model/valueObjects'
 import * as jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import log from '../../utils/logger'
@@ -39,7 +39,8 @@ class UserService {
       new FirstName(user.first_name),
       new LastName(user.last_name),
       new Email(user.email),
-      new PwHash(pwHash)
+      new PwHash(pwHash),
+      new Roles(['user'])
     )
 
     const addedUser = await this.userRepo.registerUser(validUser)

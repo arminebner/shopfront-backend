@@ -1,4 +1,4 @@
-import { Email, FirstName, Id, LastName, PwHash } from './valueObjects'
+import { Email, FirstName, Id, LastName, PwHash, Roles } from './valueObjects'
 
 class UserEntity {
   constructor(
@@ -6,7 +6,8 @@ class UserEntity {
     public firstName: FirstName,
     public lastName: LastName,
     public email: Email,
-    public pwHash: PwHash
+    public pwHash: PwHash,
+    public roles: Roles
   ) {}
 
   toJSON() {
@@ -15,6 +16,7 @@ class UserEntity {
       first_name: this.firstName.value,
       last_name: this.lastName.value,
       email: this.email.value,
+      roles: this.roles.value,
     }
   }
 }

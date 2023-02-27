@@ -18,15 +18,19 @@ afterAll(async () => {
   await prisma.$disconnect()
 })
 
+function createUser() {
+  return {
+    id: crypto.randomUUID(),
+    first_name: 'Test',
+    last_name: 'User',
+    email: 'testuser@test.de',
+    roles: ['user'],
+  }
+}
+
 describe('The user service', () => {
   test('adds a user', async () => {
-    const user = {
-      id: crypto.randomUUID(),
-      first_name: 'Test',
-      last_name: 'User',
-      email: 'testuser@test.de',
-    }
-
+    const user = createUser()
     const addedUser = await userService.registerUser({
       ...user,
       password: '983w747na8worzon439rzfona4rv',
@@ -36,54 +40,32 @@ describe('The user service', () => {
   })
 
   test('throws error, if user with email already exists', async () => {
-    const id1 = crypto.randomUUID()
-    const id2 = crypto.randomUUID()
-    const user1 = {
-      id: id1,
-      first_name: 'Test',
-      last_name: 'User',
-      email: 'testuser@test.de',
-      password: '983w747na8worzon439rzfona4rv',
-    }
-    const user2 = {
-      id: id2,
-      first_name: 'Test2',
-      last_name: 'User2',
-      email: 'testuser@test.de',
-      password: '983w747na8worzon439rzfona4rv',
-    }
+    const user1 = createUser()
+    const user2 = createUser()
 
-    await userService.registerUser(user1)
+    await userService.registerUser({ ...user1, password: '983w747na8worzon439rzfona4rv' })
 
     try {
-      await userService.registerUser(user2)
+      await userService.registerUser({ ...user2, password: '983w747na8worzon439rzfona4rv' })
     } catch (error: any) {
       expect(error.message).toBe('The user with the email: testuser@test.de already exists.')
     }
   })
 
   test('gets a user by id', async () => {
-    const id1 = crypto.randomUUID()
-    const id2 = crypto.randomUUID()
-    const user1 = {
-      id: id1,
-      first_name: 'Test',
-      last_name: 'User',
-      email: 'testuser@test.de',
-    }
-    const user2 = {
-      id: id2,
-      first_name: 'Test',
-      last_name: 'User',
-      email: 'testuser_2@test.de',
-    }
+    const user1 = createUser()
+    const user2 = createUser()
 
     await userService.registerUser({ ...user1, password: '983w747na8worzon439rzfona4rv' })
-    await userService.registerUser({ ...user2, password: '983w747na8worzon439rzfona4rv' })
+    await userService.registerUser({
+      ...user2,
+      email: 'other@mail.de',
+      password: '983w747na8worzon439rzfona4rv',
+    })
 
-    const user2ById = await userService.userById(id2)
+    const user2ById = await userService.userById(user2.id)
 
-    expect(user2ById).toEqual(user2)
+    expect(user2ById).toEqual({ ...user2, email: 'other@mail.de' })
   })
 
   // TODO logs a user in

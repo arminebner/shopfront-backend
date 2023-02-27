@@ -40,6 +40,7 @@ model User {
   last_name String
   email String @unique
   pw_hash String
+  roles String[]
   products Product[]
   refresh_token RefreshToken[]
 }

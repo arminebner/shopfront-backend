@@ -1,6 +1,13 @@
 import { describe, expect, test } from 'vitest'
 import crypto from 'crypto'
-import { Id, FirstName, LastName, Email, PwHash } from '../../userBoundedContext/model/valueObjects'
+import {
+  Id,
+  FirstName,
+  LastName,
+  Email,
+  PwHash,
+  Roles,
+} from '../../userBoundedContext/model/valueObjects'
 
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -74,5 +81,18 @@ describe('The password hash', () => {
   test('must be a string', () => {
     const validPwHash = new PwHash('sdf798sd7f97sd9f87s')
     expect(validPwHash).toBeInstanceOf(PwHash)
+  })
+})
+
+describe('The user roles', () => {
+  test('are either user|seller', () => {
+    const validRole = new Roles(['user', 'seller'])
+    expect(validRole.value).toEqual(['user', 'seller'])
+    expect(validRole).toBeInstanceOf(Roles)
+  })
+  test('throws error for unsupported roles', () => {
+    expect(() => {
+      new Roles(['user', 'some-role'])
+    }).toThrowError('The provided role is invalid')
   })
 })
