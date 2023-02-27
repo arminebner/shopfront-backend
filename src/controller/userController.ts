@@ -24,7 +24,7 @@ router.get('/api/users/user', verifyJwt, async (req: Request, res: Response) => 
 })
 
 router.post('/api/users/register', async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password } = req.body
+  const { firstName, lastName, email, password, seller } = req.body
 
   if (!firstName || !lastName || !email || !password)
     res.status(400).json({ message: 'All fields are required' })
@@ -34,6 +34,7 @@ router.post('/api/users/register', async (req: Request, res: Response) => {
     last_name: lastName,
     email: email,
     password: password,
+    seller: seller,
   }
 
   try {

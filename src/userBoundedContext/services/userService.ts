@@ -7,10 +7,7 @@ import UserRepo from '../repositories/userRepository'
 import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
 import RefreshTokenEntity from '../../common/model/refreshTokenEntity'
 import { Jwt, TokenDate, TokenId, Password } from '../../common/model/valueObjects'
-
-interface JwtPayload {
-  userId: string
-}
+import JwtPayload from '../../types/jwtPayload'
 
 class UserService {
   private userRepo: UserRepo
@@ -21,7 +18,6 @@ class UserService {
     this.refreshTokenRepo = refreshTokenRepo
   }
 
-  // TODO change to registerUser
   async registerUser(user: any) {
     const validPassword = new Password(user.password)
     const validEmail = new Email(user.email)
@@ -34,13 +30,15 @@ class UserService {
 
     const pwHash = await bcrypt.hash(validPassword.value, 10)
 
+    const roles = user.seller ? ['user', 'seller'] : ['user']
+
     const validUser = new User(
       new Id(user.id),
       new FirstName(user.first_name),
       new LastName(user.last_name),
       new Email(user.email),
       new PwHash(pwHash),
-      new Roles(['user'])
+      new Roles(roles)
     )
 
     const addedUser = await this.userRepo.registerUser(validUser)
@@ -65,15 +63,24 @@ class UserService {
     }
 
     const accessToken = jwt.sign(
-      // TODO add user name and role
-      { userId: userByEmail.id.value },
+      {
+        userInfo: {
+          userId: userByEmail.id.value,
+          userName: `${userByEmail.firstName.value} ${userByEmail.lastName.value}`,
+          roles: userByEmail.roles.value,
+        },
+      },
       process.env.ACCESS_TOKEN_SECRET as string,
       {
-        expiresIn: '900s',
+        expiresIn: '30s',
       }
     )
     const refreshToken = jwt.sign(
-      { userId: userByEmail.id.value },
+      {
+        userInfo: {
+          userId: userByEmail.id.value,
+        },
+      },
       process.env.REFRESH_TOKEN_SECRET as string,
       {
         expiresIn: '1d',
@@ -109,15 +116,20 @@ class UserService {
     let accessToken = null
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string, (error, decodedToken) => {
-      if (error || existingUserById?.id.value !== (decodedToken as JwtPayload).userId) {
+      if (error || existingUserById?.id.value !== (decodedToken as JwtPayload).userInfo.userId) {
         throw new Error('Unauthorized')
       }
-      // TODO add user name and role
       accessToken = jwt.sign(
-        { userId: (decodedToken as JwtPayload).userId },
+        {
+          userInfo: {
+            userId: existingUserById.id.value,
+            userName: `${existingUserById.firstName.value} ${existingUserById.lastName.value}`,
+            roles: existingUserById.roles.value,
+          },
+        },
         process.env.ACCESS_TOKEN_SECRET as string,
         {
-          expiresIn: '900s',
+          expiresIn: '30s',
         }
       )
     })

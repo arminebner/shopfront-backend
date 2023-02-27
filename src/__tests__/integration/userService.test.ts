@@ -9,7 +9,6 @@ const prisma = new PrismaClient()
 const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(prisma))
 
 afterEach(async () => {
-  //TODO delete only the user created in THIS test
   const deleteUsers = prisma.user.deleteMany()
   await prisma.$transaction([deleteUsers])
 })
@@ -24,19 +23,28 @@ function createUser() {
     first_name: 'Test',
     last_name: 'User',
     email: 'testuser@test.de',
-    roles: ['user'],
   }
 }
 
 describe('The user service', () => {
-  test('adds a user', async () => {
+  test('adds a user with default role user', async () => {
     const user = createUser()
     const addedUser = await userService.registerUser({
       ...user,
       password: '983w747na8worzon439rzfona4rv',
     })
+    expect(addedUser).toEqual({ ...user, roles: ['user'] })
+  })
 
-    expect(addedUser).toEqual({ ...user })
+  test('adds a user on demand a seller', async () => {
+    const user = createUser()
+    const addedUser = await userService.registerUser({
+      ...user,
+      password: '983w747na8worzon439rzfona4rv',
+      seller: true,
+    })
+
+    expect(addedUser).toEqual({ ...user, roles: ['user', 'seller'] })
   })
 
   test('throws error, if user with email already exists', async () => {
@@ -65,7 +73,7 @@ describe('The user service', () => {
 
     const user2ById = await userService.userById(user2.id)
 
-    expect(user2ById).toEqual({ ...user2, email: 'other@mail.de' })
+    expect(user2ById).toEqual({ ...user2, email: 'other@mail.de', roles: ['user'] })
   })
 
   // TODO logs a user in

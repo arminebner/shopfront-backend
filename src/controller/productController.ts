@@ -6,7 +6,11 @@ import express, { Request, Response } from 'express'
 import upload from '../utils/initMulter'
 import prisma from '../../prisma/client'
 import verifyJwt from '../middleware/verirfyJwt'
+import verifyRoles from '../middleware/verifyRoles'
+import config from 'config'
+import userRoles from '../types/userRole'
 
+const allowedRoles = config.get<userRoles>('allowedRoles')
 const productService = new ProductService(new ProductRepo(prisma))
 const productRouter = express.Router()
 
@@ -30,6 +34,7 @@ productRouter.get('/api/product/:id', async (req: Request, res: Response) => {
 productRouter.post(
   '/api/product',
   verifyJwt,
+  verifyRoles(allowedRoles.seller),
   upload.single('image_url'),
   validateResource(validProduct),
   async (req: Request, res: Response) => {
@@ -51,6 +56,7 @@ productRouter.post(
 productRouter.put(
   '/api/product',
   verifyJwt,
+  verifyRoles(allowedRoles.seller),
   upload.single('image_url'),
   validateResource(validProduct),
   async (req: Request, res: Response) => {
@@ -69,14 +75,19 @@ productRouter.put(
   }
 )
 
-productRouter.delete('/api/product/:id', verifyJwt, async (req: Request, res: Response) => {
-  const id = req.params.id as string
-  try {
-    const result = await productService.deleteById(id)
-    res.json(result)
-  } catch (error: any) {
-    res.status(400).send(error.message)
+productRouter.delete(
+  '/api/product/:id',
+  verifyJwt,
+  verifyRoles(allowedRoles.seller),
+  async (req: Request, res: Response) => {
+    const id = req.params.id as string
+    try {
+      const result = await productService.deleteById(id)
+      res.json(result)
+    } catch (error: any) {
+      res.status(400).send(error.message)
+    }
   }
-})
+)
 
 export default productRouter

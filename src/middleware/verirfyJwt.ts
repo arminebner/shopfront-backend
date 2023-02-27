@@ -1,13 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
 import * as jwt from 'jsonwebtoken'
-
-interface JwtPayload {
-  userId: string
-}
+import JwtPayload from '../types/jwtPayload'
 
 const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization']
-  if (!authHeader) return res.sendStatus(403)
+  if (!authHeader) return res.sendStatus(401)
 
   const token = authHeader.split(' ')[1]
 
@@ -17,7 +14,9 @@ const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
       return res.sendStatus(403)
     }
     if (decodedToken) {
-      req.userId = (decodedToken as JwtPayload).userId
+      req.userId = (decodedToken as JwtPayload).userInfo.userId
+      req.userName = (decodedToken as JwtPayload).userInfo.userName
+      req.roles = (decodedToken as JwtPayload).userInfo.roles
       next()
     }
   })
