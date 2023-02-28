@@ -9,6 +9,7 @@ import path from 'path'
 import cookieParser from 'cookie-parser'
 import corsOptions from '../config/corsOptions'
 import credentials from './middleware/credentials'
+import sanitize from './middleware/sanitize'
 
 dotenv.config()
 const app = express()
@@ -23,6 +24,7 @@ app.use(helmet())
 app.use(express.json())
 app.use(cookieParser())
 
+app.use(sanitize)
 app.use(router)
 
 const port = config.get('port')
