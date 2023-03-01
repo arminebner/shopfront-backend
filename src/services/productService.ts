@@ -12,6 +12,7 @@ import FileDeletionService from '../openServices/imageDeletionService'
 import log from '../utils/logger'
 import ProductEntity from '../model/product'
 import ProductRepo from '../repositories/productRepository'
+import Filter from '../types/filter'
 class ProductService {
   private repo: ProductRepo
   fileDeletionService: FileDeletionService
@@ -47,8 +48,9 @@ class ProductService {
     return addedProduct.toJSON()
   }
 
-  async allProducts(userId?: string) {
-    const allProducts = await this.repo.allProducts(userId)
+  async allProducts(filter: Filter) {
+    const filterObject = buildFilter(filter)
+    const allProducts = await this.repo.allProducts(filterObject)
 
     return allProducts.map(product => product.toJSON())
   }
@@ -103,6 +105,12 @@ class ProductService {
 
     return updatedProduct.toJSON()
   }
+}
+
+function buildFilter(filter: Filter): Filter {
+  if (filter.userId) return { userId: filter.userId, category: '' }
+  if (filter.category !== 'All') return { userId: '', category: filter.category }
+  return { userId: '', category: '' }
 }
 
 export default ProductService

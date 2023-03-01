@@ -17,7 +17,13 @@ const productRouter = express.Router()
 productRouter.get('/api/products/healthcheck', (_: Request, res: Response) => res.sendStatus(200))
 
 productRouter.get('/api/products', async (req: Request, res: Response) => {
-  const result = await productService.allProducts()
+  const result = await productService.allProducts({})
+  res.json(result)
+})
+
+productRouter.get('/api/products/category/:category', async (req: Request, res: Response) => {
+  const category = req.params.category as string
+  const result = await productService.allProducts({ category })
   res.json(result)
 })
 
@@ -31,10 +37,10 @@ productRouter.get('/api/product/:id', async (req: Request, res: Response) => {
   }
 })
 
-productRouter.get('/api/products/user/:id', async (req: Request, res: Response) => {
+productRouter.get('/api/products/user/:id', verifyJwt, async (req: Request, res: Response) => {
   const id = req.params.id as string
   try {
-    const result = await productService.allProducts(id)
+    const result = await productService.allProducts({ userId: id })
     res.json(result)
   } catch (error: any) {
     res.status(400).send(error.message)

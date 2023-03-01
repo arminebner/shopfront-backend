@@ -10,6 +10,7 @@ import {
   Category,
   Quantity,
 } from '../model/valueObjects'
+import Filter from '../types/filter'
 class ProductRepo {
   prisma: PrismaClient
 
@@ -44,10 +45,13 @@ class ProductRepo {
     return productById ? productFromData(productById) : undefined
   }
 
-  async allProducts(userId?: string) {
+  async allProducts(filter: Filter) {
     const allProducts = await this.prisma.product.findMany({
       where: {
-        ...(userId ? { user_id: userId } : {}),
+        AND: [
+          { ...(filter.userId ? { user_id: filter.userId } : {}) },
+          { ...(filter.category ? { category: filter.category } : {}) },
+        ],
       },
     })
     return allProducts.map(p => productFromData(p))

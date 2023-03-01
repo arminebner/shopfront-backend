@@ -27,7 +27,7 @@ async function createUser(userId: string) {
   return await userService.registerUser(user)
 }
 
-function createProduct(userId: string, amount: number) {
+function createProduct(userId: string, amount: number, category?: string) {
   const array = Array.from({ length: amount }, (_, i) => i + 1)
   const products: Product[] = []
 
@@ -40,7 +40,7 @@ function createProduct(userId: string, amount: number) {
       image_url: 'file_name.jpg',
       price: '5.50',
       quantity: 1,
-      category: 'Category1',
+      category: category ? category : 'Category1',
       user_id: userId,
     })
   })
@@ -97,9 +97,35 @@ describe('The product service', () => {
       }
     })
 
+    const filter = { category: 'All' }
+
     try {
-      const allProducts = await productService.allProducts()
+      const allProducts = await productService.allProducts(filter)
       expect(allProducts).toEqual(mappedProducts)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  test('returns all products filtered for category', async () => {
+    const product1 = createProduct(userId1, 1)
+    const product2 = createProduct(userId1, 1, 'Category2')
+
+    await productService.addProduct(product1[0])
+    await productService.addProduct(product2[0])
+
+    const mappedProduct2 = product2.map(product => {
+      return {
+        ...product,
+        image_url: `http://localhost:5000/images/${product.image_url}`,
+      }
+    })
+
+    const filter = { category: 'Category2' }
+
+    try {
+      const allProducts = await productService.allProducts(filter)
+      expect(allProducts).toEqual(mappedProduct2)
     } catch (error) {
       console.log(error)
     }
@@ -119,8 +145,10 @@ describe('The product service', () => {
       }
     })
 
+    const filter = { userId: userId2 }
+
     try {
-      const allUser2Products = await productService.allProducts(userId2)
+      const allUser2Products = await productService.allProducts(filter)
       expect(allUser2Products).toEqual(mappedUser2Products)
     } catch (error) {
       console.log(error)
@@ -156,9 +184,14 @@ describe('The product service', () => {
     await productService.addProduct(products[0])
     await productService.addProduct(products[1])
 
+    const filter = {
+      userId: '',
+      category: '',
+    }
+
     try {
       await productService.deleteById(products[0].id)
-      const remainingProducts = await productService.allProducts()
+      const remainingProducts = await productService.allProducts(filter)
       expect(remainingProducts).not.toContain(products[0].id)
     } catch (error) {
       console.log(error)
