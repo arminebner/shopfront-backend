@@ -11,9 +11,10 @@ import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
 const prisma = new PrismaClient()
 const productService = new ProductService(new ProductRepo(prisma))
 
-const userId = crypto.randomUUID()
+const userId1 = crypto.randomUUID()
+const userId2 = crypto.randomUUID()
 
-async function createUser() {
+async function createUser(userId: string) {
   const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(prisma))
   const user = {
     id: userId,
@@ -26,14 +27,14 @@ async function createUser() {
   return await userService.registerUser(user)
 }
 
-function createProduct(amount: number) {
+function createProduct(userId: string, amount: number) {
   const array = Array.from({ length: amount }, (_, i) => i + 1)
   const products: Product[] = []
 
   array.forEach(element => {
     products.push({
       id: crypto.randomUUID(),
-      name: `Product${element}: ${Date.now()}`,
+      name: `Product${Math.random()}`,
       short_description: 'Lorem ipsum dolor sit amet, consetetur sadipsc',
       description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
       image_url: 'file_name.jpg',
@@ -48,7 +49,7 @@ function createProduct(amount: number) {
 }
 
 beforeEach(async () => {
-  await createUser()
+  await createUser(userId1)
 })
 
 afterEach(async () => {
@@ -64,7 +65,7 @@ afterAll(async () => {
 
 describe('The product service', () => {
   test('adds a product', async () => {
-    const products = createProduct(1)
+    const products = createProduct(userId1, 1)
     const addedProduct = await productService.addProduct(products[0])
 
     expect(addedProduct).toEqual({
@@ -74,7 +75,7 @@ describe('The product service', () => {
   })
 
   test('throws error for existing productname', async () => {
-    const product = createProduct(1)
+    const product = createProduct(userId1, 1)
     await productService.addProduct(product[0])
 
     try {
@@ -85,7 +86,7 @@ describe('The product service', () => {
   })
 
   test('returns all products', async () => {
-    const products = createProduct(2)
+    const products = createProduct(userId1, 2)
     await productService.addProduct(products[0])
     await productService.addProduct(products[1])
 
@@ -104,8 +105,30 @@ describe('The product service', () => {
     }
   })
 
+  test('returns all products per userId', async () => {
+    await createUser(userId2)
+    const user1Products = createProduct(userId1, 1)
+    const user2Products = createProduct(userId2, 1)
+    await productService.addProduct(user1Products[0])
+    await productService.addProduct(user2Products[0])
+
+    const mappedUser2Products = user2Products.map(product => {
+      return {
+        ...product,
+        image_url: `http://localhost:5000/images/${product.image_url}`,
+      }
+    })
+
+    try {
+      const allUser2Products = await productService.allProducts(userId2)
+      expect(allUser2Products).toEqual(mappedUser2Products)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
   test('returns a product by id', async () => {
-    const products = createProduct(2)
+    const products = createProduct(userId1, 2)
     await productService.addProduct(products[0])
     await productService.addProduct(products[1])
 
@@ -129,7 +152,7 @@ describe('The product service', () => {
   })
 
   test('deletes a product', async () => {
-    const products = createProduct(2)
+    const products = createProduct(userId1, 2)
     await productService.addProduct(products[0])
     await productService.addProduct(products[1])
 
@@ -143,7 +166,7 @@ describe('The product service', () => {
   })
 
   test('updates a product', async () => {
-    const product = createProduct(1)
+    const product = createProduct(userId1, 1)
     await productService.addProduct(product[0])
     const productToUpdate = {
       id: product[0].id,
@@ -154,7 +177,7 @@ describe('The product service', () => {
       price: '10.00',
       quantity: 4,
       category: 'Category3',
-      user_id: userId,
+      user_id: userId1,
     }
 
     const updatedProduct = await productService.updateProduct(productToUpdate)

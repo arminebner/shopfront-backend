@@ -72,7 +72,7 @@ class UserService {
       },
       process.env.ACCESS_TOKEN_SECRET as string,
       {
-        expiresIn: '30s',
+        expiresIn: '900s',
       }
     )
     const refreshToken = jwt.sign(
@@ -129,7 +129,7 @@ class UserService {
         },
         process.env.ACCESS_TOKEN_SECRET as string,
         {
-          expiresIn: '30s',
+          expiresIn: '900s',
         }
       )
     })

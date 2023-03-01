@@ -47,8 +47,8 @@ class ProductService {
     return addedProduct.toJSON()
   }
 
-  async allProducts() {
-    const allProducts = await this.repo.allProducts()
+  async allProducts(userId?: string) {
+    const allProducts = await this.repo.allProducts(userId)
 
     return allProducts.map(product => product.toJSON())
   }

@@ -44,8 +44,12 @@ class ProductRepo {
     return productById ? productFromData(productById) : undefined
   }
 
-  async allProducts() {
-    const allProducts = await this.prisma.product.findMany({})
+  async allProducts(userId?: string) {
+    const allProducts = await this.prisma.product.findMany({
+      where: {
+        ...(userId ? { user_id: userId } : {}),
+      },
+    })
     return allProducts.map(p => productFromData(p))
   }
 

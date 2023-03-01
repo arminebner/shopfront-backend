@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express'
 import prisma from '../../prisma/client'
-import verifyJwt from '../middleware/verirfyJwt'
 import RefreshTokenRepo from '../repositories/refreshTokenRepository'
 import UserRepo from '../userBoundedContext/repositories/userRepository'
 import UserService from '../userBoundedContext/services/userService'
+import verifyJwt from '../middleware/verirfyJwt'
 
 const router = express.Router()
 const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(prisma))
