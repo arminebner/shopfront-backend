@@ -31,6 +31,8 @@ class ProductService {
       throw new Error('This product name is already taken.')
     }
 
+    log.info(new Price(productToAdd.price).valueToMoney())
+
     const validProduct = new ProductEntity(
       new Id(productToAdd.id),
       new Name(productToAdd.name),

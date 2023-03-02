@@ -21,9 +21,14 @@ productRouter.get('/api/products', async (req: Request, res: Response) => {
   res.json(result)
 })
 
-productRouter.get('/api/products/category/:category', async (req: Request, res: Response) => {
-  const category = req.params.category as string
-  const result = await productService.allProducts({ category })
+productRouter.post('/api/products/filtered', async (req: Request, res: Response) => {
+  const category = req.body.category ? req.body.category : ''
+  const userId = req.body.userId ? req.body.userId : ''
+  const filter = {
+    category,
+    userId,
+  }
+  const result = await productService.allProducts(filter)
   res.json(result)
 })
 
@@ -31,16 +36,6 @@ productRouter.get('/api/product/:id', async (req: Request, res: Response) => {
   const id = req.params.id as string
   try {
     const result = await productService.productById(id)
-    res.json(result)
-  } catch (error: any) {
-    res.status(400).send(error.message)
-  }
-})
-
-productRouter.get('/api/products/user/:id', verifyJwt, async (req: Request, res: Response) => {
-  const id = req.params.id as string
-  try {
-    const result = await productService.allProducts({ userId: id })
     res.json(result)
   } catch (error: any) {
     res.status(400).send(error.message)
