@@ -9,7 +9,7 @@ import {
   ImageUrl,
   Quantity,
   Category,
-} from '../../model/valueObjects'
+} from '../../boundedContexts/productManagement/model/valueObjects'
 import crypto from 'crypto'
 
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i

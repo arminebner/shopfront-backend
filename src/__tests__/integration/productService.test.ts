@@ -1,12 +1,12 @@
 import { afterAll, afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { PrismaClient } from '@prisma/client'
 import crypto from 'crypto'
-import ProductService from '../../services/productService'
+import ProductService from '../../boundedContexts/productManagement/services/productService'
 import Product from '../../types/product'
-import ProductRepo from '../../repositories/productRepository'
-import UserService from '../../userBoundedContext/services/userService'
-import UserRepo from '../../userBoundedContext/repositories/userRepository'
-import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
+import ProductRepo from '../../boundedContexts/productManagement/repositories/productRepository'
+import UserService from '../../boundedContexts/iam/services/userService'
+import UserRepo from '../../boundedContexts/iam/repositories/userRepository'
+import RefreshTokenRepo from '../../boundedContexts/iam/repositories/refreshTokenRepository'
 
 const prisma = new PrismaClient()
 const productService = new ProductService(new ProductRepo(prisma))

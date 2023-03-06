@@ -10,7 +10,7 @@ import {
   Category,
   Quantity,
 } from '../model/valueObjects'
-import Filter from '../types/filter'
+import Filter from '../../../types/filter'
 class ProductRepo {
   prisma: PrismaClient
 

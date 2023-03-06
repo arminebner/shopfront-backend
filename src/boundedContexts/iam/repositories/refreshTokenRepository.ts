@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
-import RefreshTokenEntity from '../common/model/refreshTokenEntity'
-import { TokenId, Jwt, TokenDate } from '../common/model/valueObjects'
-import { Id } from '../model/valueObjects'
+import RefreshTokenEntity from '../../../common/model/refreshTokenEntity'
+import { TokenId, Jwt, TokenDate } from '../../../common/model/valueObjects'
+import { Id } from '../../productManagement/model/valueObjects'
 
 class RefreshTokenRepo {
   prisma: PrismaClient

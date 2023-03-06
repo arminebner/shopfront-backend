@@ -1,9 +1,9 @@
 import { afterAll, afterEach, describe, expect, test } from 'vitest'
 import { PrismaClient } from '@prisma/client'
-import UserService from '../../userBoundedContext/services/userService'
-import UserRepo from '../../userBoundedContext/repositories/userRepository'
+import UserService from '../../boundedContexts/iam/services/userService'
+import UserRepo from '../../boundedContexts/iam/repositories/userRepository'
 import crypto from 'crypto'
-import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
+import RefreshTokenRepo from '../../boundedContexts/iam/repositories/refreshTokenRepository'
 
 const prisma = new PrismaClient()
 const userService = new UserService(new UserRepo(prisma), new RefreshTokenRepo(prisma))

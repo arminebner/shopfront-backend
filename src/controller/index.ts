@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
-import productRouter from './productController'
-import userRouter from './userController'
+import productRouter from '../boundedContexts/productManagement/controller/productController'
+import userRouter from '../boundedContexts/iam/controller/userController'
 
 const router = express.Router()
 

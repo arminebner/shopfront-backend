@@ -1,4 +1,4 @@
-import { Id } from '../../model/valueObjects'
+import { Id } from '../../boundedContexts/productManagement/model/valueObjects'
 import { TokenDate, TokenId, Jwt } from './valueObjects'
 
 class RefreshTokenEntity {

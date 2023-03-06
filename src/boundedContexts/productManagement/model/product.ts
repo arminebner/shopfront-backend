@@ -9,7 +9,7 @@ import {
   ShortDescription,
   Quantity,
   Category,
-} from '../model/valueObjects'
+} from './valueObjects'
 
 const host = config.get<string>('host')
 

@@ -1,13 +1,13 @@
 import { Id, FirstName, LastName, Email, PwHash, Roles } from '../model/valueObjects'
 import * as jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import log from '../../utils/logger'
+import log from '../../../utils/logger'
 import User from '../model/user'
 import UserRepo from '../repositories/userRepository'
-import RefreshTokenRepo from '../../repositories/refreshTokenRepository'
-import RefreshTokenEntity from '../../common/model/refreshTokenEntity'
-import { Jwt, TokenDate, TokenId, Password } from '../../common/model/valueObjects'
-import JwtPayload from '../../types/jwtPayload'
+import RefreshTokenRepo from '../repositories/refreshTokenRepository'
+import RefreshTokenEntity from '../../../common/model/refreshTokenEntity'
+import { Jwt, TokenDate, TokenId, Password } from '../../../common/model/valueObjects'
+import JwtPayload from '../../../types/jwtPayload'
 
 class UserService {
   private userRepo: UserRepo

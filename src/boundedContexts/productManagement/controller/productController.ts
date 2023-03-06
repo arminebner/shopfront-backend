@@ -1,14 +1,12 @@
-import { validProduct } from '../validation/productValidation'
 import config from 'config'
 import express, { Request, Response } from 'express'
-import prisma from '../../prisma/client'
+import prisma from '../../../../prisma/client'
 import ProductRepo from '../repositories/productRepository'
-import ProductService from '../services/productService'
-import upload from '../utils/initMulter'
-import userRoles from '../types/userRole'
-import validateResource from '../middleware/validateResource'
-import verifyJwt from '../middleware/verirfyJwt'
-import verifyRoles from '../middleware/verifyRoles'
+import ProductService from '../../../boundedContexts/productManagement/services/productService'
+import upload from '../../../utils/initMulter'
+import userRoles from '../../../types/userRole'
+import verifyJwt from '../../../middleware/verirfyJwt'
+import verifyRoles from '../../../middleware/verifyRoles'
 
 const allowedRoles = config.get<userRoles>('allowedRoles')
 const productService = new ProductService(new ProductRepo(prisma))
@@ -47,7 +45,6 @@ productRouter.post(
   verifyJwt,
   verifyRoles(allowedRoles.seller),
   upload.single('image_url'),
-  validateResource(validProduct),
   async (req: Request, res: Response) => {
     const validProduct = {
       ...req.body,
@@ -67,7 +64,6 @@ productRouter.put(
   verifyJwt,
   verifyRoles(allowedRoles.seller),
   upload.single('image_url'),
-  validateResource(validProduct),
   async (req: Request, res: Response) => {
     const validProduct = {
       ...req.body,

@@ -8,11 +8,11 @@ import {
   Quantity,
   Category,
 } from '../model/valueObjects'
-import FileDeletionService from '../openServices/imageDeletionService'
-import log from '../utils/logger'
+import FileDeletionService from '../../../openServices/imageDeletionService'
+import log from '../../../utils/logger'
 import ProductEntity from '../model/product'
 import ProductRepo from '../repositories/productRepository'
-import Filter from '../types/filter'
+import Filter from '../../../types/filter'
 class ProductService {
   private repo: ProductRepo
   fileDeletionService: FileDeletionService
